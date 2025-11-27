@@ -1,87 +1,167 @@
 <template>
-  <div class="login">
-    <h2>Iniciar Sesión o Registrarse</h2>
+  <div class="login-container">
+    <div class="login-box">
 
-    <form @submit.prevent="accion">
-      <input v-model="correo" type="email" placeholder="Correo" required />
-       <input v-model="contrasena" type="password" placeholder="Contraseña" required />
-      <input v-model="nombre" type="text" placeholder="Nombre (solo registro)" />
-     
+      <h2>Iniciar Sesión</h2>
 
-      <div class="botones">
-        <button type="button" @click="iniciarSesion">Iniciar Sesión</button>
-        <button type="button" @click="registrarUsuario">Registrar</button>
+      <form @submit.prevent="loginUser">
+        <input type="email" v-model="correo" placeholder="Correo" required />
+        <input type="password" v-model="contrasena" placeholder="Contraseña" required />
+        <button type="submit">Entrar</button>
+      </form>
+
+      <p class="toggle-text">
+        ¿No tienes cuenta?
+        <span @click="toggleRegister">Regístrate aquí</span>
+      </p>
+
+      <!-- Registro -->
+      <div v-if="mostrarRegistro">
+        <h2>Registro</h2>
+        <form @submit.prevent="registerUser">
+          <input type="text" v-model="nombre" placeholder="Nombre completo" required />
+          <input type="email" v-model="correo" placeholder="Correo" required />
+          <input type="password" v-model="contrasena" placeholder="Contraseña" required />
+          <button type="submit">Registrar</button>
+        </form>
       </div>
-    </form>
 
-    <p v-if="mensaje" class="msg">{{ mensaje }}</p>
+      <!-- BOTÓN PARA ADMINS -->
+      <button class="btn-admin" @click="irAdmin">
+        Acceso para administradores
+      </button>
+
+      <!-- MENSAJES -->
+      <p v-if="mensaje" class="mensaje">{{ mensaje }}</p>
+
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
 import axios from "axios";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
+
+// Campos
 const correo = ref("");
-const nombre = ref("");
 const contrasena = ref("");
+const nombre = ref("");
+
+// Registro visible o no
+const mostrarRegistro = ref(false);
+
+// Mensaje de respuesta
 const mensaje = ref("");
 
-// 🔹 REGISTRO
-const registrarUsuario = async () => {
+// Cambiar entre login y registro
+const toggleRegister = () => {
+  mostrarRegistro.value = !mostrarRegistro.value;
+};
+
+// 🔹 LOGIN
+const loginUser = async () => {
   try {
-    const res = await axios.post("http://localhost:2629/registrar", {
+    const response = await axios.post("http://localhost:2629/login", {
+      correo: correo.value,
+      contrasena: contrasena.value,
+    });
+
+    if (response.data.usuario) {
+      mensaje.value = "Inicio de sesión exitoso";
+      localStorage.setItem("usuario", JSON.stringify(response.data.usuario));
+      router.push("/HomeView");
+    } else {
+      mensaje.value = "Correo o contraseña incorrectos";
+    }
+  } catch (error) {
+    mensaje.value = error.response?.data?.error || "Error al iniciar sesión";
+  }
+};
+
+// 🔹 REGISTRO
+const registerUser = async () => {
+  try {
+    const response = await axios.post("http://localhost:2629/registrar", {
       nombre: nombre.value,
       correo: correo.value,
       contrasena: contrasena.value,
     });
-    mensaje.value = res.data.mensaje;
-    console.log("Usuario creado:", res.data.usuario);
-  } catch (err) {
-    console.error("Error al registrar:", err);
-    mensaje.value = "❌ Error al registrar usuario";
+
+    if (response.status === 200) {
+      mensaje.value = "Usuario registrado correctamente";
+      mostrarRegistro.value = false;
+      nombre.value = "";
+      correo.value = "";
+      contrasena.value = "";
+    }
+  } catch (error) {
+    mensaje.value = error.response?.data?.error || "Error al registrar usuario";
   }
 };
 
-// 🔹 LOGIN
-const iniciarSesion = async () => {
-  try {
-    const res = await axios.post("http://localhost:2629/login", {
-      correo: correo.value,
-      contrasena: contrasena.value,
-    });
-    mensaje.value = res.data.mensaje;
-    console.log("Usuario logueado:", res.data.usuario);
-  } catch (err) {
-    console.error("Error al iniciar sesión:", err);
-    mensaje.value = "❌ No se pudo iniciar sesión";
-  }
+// 🔹 IR A LOGIN DE ADMIN
+const irAdmin = () => {
+  router.push("/AdminLogin");
 };
 </script>
 
-<style>
-.login {
+<style scoped>
+.login-container {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 10px;
-  margin-top: 40px;
+  height: 100vh;
+  background: #f0f2f5;
 }
 
-input, button {
+.login-box {
+  background: white;
+  padding: 30px;
+  width: 380px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+input {
+  width: 100%;
   padding: 10px;
-  width: 230px;
-  margin: 5px;
+  margin: 8px 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
 }
 
-.botones {
-  display: flex;
-  gap: 10px;
-}
-
-.msg {
+button {
+  width: 100%;
+  padding: 10px;
   margin-top: 10px;
+  border: none;
+  background: #3498db;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #2980b9;
+}
+
+.btn-admin {
+  background: #16a085;
+  margin-top: 15px;
+}
+
+.toggle-text span {
+  color: #3498db;
+  cursor: pointer;
   font-weight: bold;
-  color: rgb(4, 189, 35);
+}
+
+.mensaje {
+  margin-top: 15px;
+  color: red;
 }
 </style>
