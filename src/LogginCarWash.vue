@@ -13,6 +13,7 @@
         <input v-model="contrasena" type="password" required />
 
         <button class="btn" type="submit">Iniciar Sesión</button>
+        <button class="btn" type="submit">Registrar Car Wash</button>
       </form>
 
       <p v-if="mensaje" class="msg">{{ mensaje }}</p>
@@ -54,7 +55,7 @@ const loginCarwash = async () => {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: #eef2f3;
+  background: #145da0;
 }
 
 .login-card {

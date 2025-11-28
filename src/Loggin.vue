@@ -114,7 +114,8 @@ const irAdmin = () => {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: #f0f2f5;
+  background: #145da0;
+  /*background: #f0f2f5;*/
 }
 
 .login-box {
