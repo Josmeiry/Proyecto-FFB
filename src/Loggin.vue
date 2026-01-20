@@ -4,9 +4,10 @@
 
       <h2>Iniciar Sesión</h2>
 
+      <!-- LOGIN -->
       <form @submit.prevent="loginUser">
-        <input type="email" v-model="correo" placeholder="Correo" required />
-        <input type="password" v-model="contrasena" placeholder="Contraseña" required />
+        <input type="email" v-model="loginCorreo" placeholder="Correo" required />
+        <input type="password" v-model="loginContrasena" placeholder="Contraseña" required />
         <button type="submit">Entrar</button>
       </form>
 
@@ -15,23 +16,22 @@
         <span @click="toggleRegister">Regístrate aquí</span>
       </p>
 
-      <!-- Registro -->
+      <!-- REGISTRO -->
       <div v-if="mostrarRegistro">
         <h2>Registro</h2>
+
         <form @submit.prevent="registerUser">
-          <input type="text" v-model="nombre" placeholder="Nombre completo" required />
-          <input type="email" v-model="correo" placeholder="Correo" required />
-          <input type="password" v-model="contrasena" placeholder="Contraseña" required />
+          <input type="text" v-model="registerNombre" placeholder="Nombre completo" required />
+          <input type="email" v-model="registerCorreo" placeholder="Correo" required />
+          <input type="password" v-model="registerContrasena" placeholder="Contraseña" required />
           <button type="submit">Registrar</button>
         </form>
       </div>
 
-      <!-- BOTÓN PARA ADMINS -->
       <button class="btn-admin" @click="irAdmin">
         Acceso para administradores
       </button>
 
-      <!-- MENSAJES -->
       <p v-if="mensaje" class="mensaje">{{ mensaje }}</p>
 
     </div>
@@ -45,68 +45,74 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-// Campos
-const correo = ref("");
-const contrasena = ref("");
-const nombre = ref("");
+// LOGIN CAMPOS
+const loginCorreo = ref("");
+const loginContrasena = ref("");
 
-// Registro visible o no
+// REGISTRO CAMPOS
+const registerNombre = ref("");
+const registerCorreo = ref("");
+const registerContrasena = ref("");
+
 const mostrarRegistro = ref(false);
-
-// Mensaje de respuesta
 const mensaje = ref("");
 
-// Cambiar entre login y registro
+// Mostrar/ocultar registro
 const toggleRegister = () => {
   mostrarRegistro.value = !mostrarRegistro.value;
 };
 
-// 🔹 LOGIN
+
+
+
+// LOGIN
 const loginUser = async () => {
   try {
-    const response = await axios.post("http://localhost:2629/login", {
-      correo: correo.value,
-      contrasena: contrasena.value,
+    const response = await axios.post("http://localhost:2629/login-usuario", {
+      correo: loginCorreo.value,
+      contrasena: loginContrasena.value,
     });
 
-    if (response.data.usuario) {
-      mensaje.value = "Inicio de sesión exitoso";
-      localStorage.setItem("usuario", JSON.stringify(response.data.usuario));
-      router.push("/HomeView");
-    } else {
-      mensaje.value = "Correo o contraseña incorrectos";
-    }
+    // Guardar usuario en localStorage
+    localStorage.setItem("usuario", JSON.stringify(response.data.usuario));
+
+    mensaje.value = "Inicio de sesión exitoso";
+
+    // Redirigir
+    router.push("/HomeView");
+
   } catch (error) {
-    mensaje.value = error.response?.data?.error || "Error al iniciar sesión";
+    mensaje.value =
+      error.response?.data?.msg || "Error al iniciar sesión";
   }
 };
 
-// 🔹 REGISTRO
+
+
+// REGISTRO
 const registerUser = async () => {
   try {
-    const response = await axios.post("http://localhost:2629/registrar", {
-      nombre: nombre.value,
-      correo: correo.value,
-      contrasena: contrasena.value,
+    const response = await axios.post("http://localhost:2629/registrar-usuario", {
+      nombre: registerNombre.value,
+      correo: registerCorreo.value,
+      contrasena: registerContrasena.value,
     });
 
-    if (response.status === 200) {
+    if (response.status === 201) {
       mensaje.value = "Usuario registrado correctamente";
       mostrarRegistro.value = false;
-      nombre.value = "";
-      correo.value = "";
-      contrasena.value = "";
     }
+
   } catch (error) {
-    mensaje.value = error.response?.data?.error || "Error al registrar usuario";
+    mensaje.value =
+      error.response?.data?.msg || "Error al registrar";
   }
 };
 
-// 🔹 IR A LOGIN DE ADMIN
-const irAdmin = () => {
-  router.push("/AdminLogin");
-};
+
+const irAdmin = () => router.push("/login-admin");
 </script>
+
 
 <style scoped>
 .login-container {
@@ -115,7 +121,6 @@ const irAdmin = () => {
   align-items: center;
   height: 100vh;
   background: #145da0;
-  /*background: #f0f2f5;*/
 }
 
 .login-box {

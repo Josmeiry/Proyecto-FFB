@@ -1,4 +1,6 @@
 <template>
+
+
   <div class="page">
     <div class="content">
       <!-- Lista de Car Wash -->

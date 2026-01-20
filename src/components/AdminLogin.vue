@@ -4,7 +4,7 @@
 
       <div class="modal-header">
         <h2>Acceso de Administrador</h2>
-        <button class="close-btn" @click="$router.back()">✕</button>
+        <button class="close-btn" @click="emitClose">✕</button>
       </div>
 
       <p class="subtext">Ingresa tus credenciales para continuar.</p>
@@ -17,7 +17,7 @@
         <input v-model="contrasena" type="password" placeholder="Introduce la contraseña" required />
 
         <div class="buttons">
-          <button type="button" class="btn-cancel" @click="$router.back()">Cancelar</button>
+          <button type="button" class="btn-cancel" @click="emitClose">Cancelar</button>
           <button type="submit" class="btn-access">Acceder</button>
         </div>
       </form>
@@ -33,9 +33,9 @@
 <script setup>
 import { ref } from "vue";
 import axios from "axios";
-import { useRouter } from "vue-router";
 
-const router = useRouter();
+const emit = defineEmits(["close", "success"]);
+
 const correo = ref("");
 const contrasena = ref("");
 const mensaje = ref("");
@@ -43,9 +43,15 @@ const autenticado = ref(false);
 
 const API_URL = "http://localhost:2629";
 
+/* Emitir evento para cerrar el modal */
+const emitClose = () => {
+  emit("close");
+};
+
+/* Proceso de login */
 const loginAdmin = async () => {
   try {
-    const res = await axios.post(`${API_URL}/admin-login`, {
+    const res = await axios.post(`${API_URL}/admin/admin-login`, {
       correo: correo.value,
       contrasena: contrasena.value,
     });
@@ -54,7 +60,7 @@ const loginAdmin = async () => {
     mensaje.value = res.data.mensaje;
 
     if (autenticado.value) {
-      setTimeout(() => router.push("/login-carwash"), 800);
+      emit("success"); // Notificar al padre que el login fue exitoso
     }
   } catch (err) {
     mensaje.value = err.response?.data?.mensaje || "Error de conexión con el servidor ❌";
@@ -63,9 +69,8 @@ const loginAdmin = async () => {
 };
 </script>
 
-
 <style scoped>
-/* Fondo Oscuro Difuminado */
+/* --- TU MISMO CSS, SIN CAMBIOS --- */
 .overlay {
   position: fixed;
   inset: 0;
@@ -77,7 +82,6 @@ const loginAdmin = async () => {
   z-index: 9999;
 }
 
-/* Modal */
 .modal {
   width: 420px;
   background: white;
@@ -88,7 +92,6 @@ const loginAdmin = async () => {
   animation: fadeIn 0.25s ease;
 }
 
-/* Header */
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -101,14 +104,12 @@ const loginAdmin = async () => {
   margin: 0;
 }
 
-/* Subtexto */
 .subtext {
   margin-top: -5px;
   font-size: 14px;
   color: #666;
 }
 
-/* Botón cierre */
 .close-btn {
   border: none;
   background: transparent;
@@ -116,7 +117,6 @@ const loginAdmin = async () => {
   cursor: pointer;
 }
 
-/* Formulario */
 .form {
   margin-top: 20px;
   text-align: left;
@@ -137,7 +137,6 @@ input {
   font-size: 15px;
 }
 
-/* Botones */
 .buttons {
   display: flex;
   justify-content: space-between;
@@ -154,18 +153,15 @@ input {
   font-size: 15px;
 }
 
-/* Cancelar */
 .btn-cancel {
   background: #e5e5e5;
 }
 
-/* Acceder */
 .btn-access {
   background: #0d6efd;
   color: white;
 }
 
-/* Mensajes */
 .msg {
   margin-top: 15px;
   font-weight: bold;
@@ -177,7 +173,6 @@ input {
   color: red;
 }
 
-/* Animación */
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }

@@ -30,6 +30,9 @@
 <script setup>
 import { ref } from "vue";
 import axios from "axios";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const nombre_carwash = ref("");
 const correo = ref("");
@@ -42,7 +45,7 @@ const API_URL = "http://localhost:2629";
 
 const crearCarWash = async () => {
   try {
-    await axios.post(`${API_URL}/registrar-carwash`, {
+    await axios.post(`${API_URL}/registrar`, {
       nombre_carwash: nombre_carwash.value,
       correo: correo.value,
       contrasena: contrasena.value,
@@ -51,14 +54,18 @@ const crearCarWash = async () => {
     });
 
     mensaje.value = "CarWash registrado correctamente ✔";
+    router.push("/Dashboard_CarWash");
+
   } catch (err) {
+    console.error(err);
     mensaje.value = "Error al registrar ❌";
   }
 };
 </script>
 
+
 <style scoped>
-/* --- ESTILO EXACTO DEL LOGIN QUE MOSTRASTE --- */
+
 
 .page {
   display: flex;

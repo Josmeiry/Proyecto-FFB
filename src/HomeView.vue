@@ -1,12 +1,20 @@
 <template>
   <div class="home">
 
-    <!-- Botón principal -->
-    <button class="btn-main" @click="openModal = true">
-      Buscar mi tipo de carro
-    </button>
+    <!-- VIDEO HERO -->
+    <div class="hero">
+      <video autoplay muted loop playsinline >
+        <source src="/videocaewash.mp4" type="video/mp4" />
+      </video>
 
-    <!-- Modal Selección de Vehículo -->
+      <div class="hero-overlay"></div>
+
+      <button class="btn-main" @click="openModal = true">
+        Buscar mi tipo de carro
+      </button>
+    </div>
+
+    <!-- MODAL -->
     <div class="modal-overlay" v-if="openModal">
       <div class="modal">
         <div class="modal-header">
@@ -15,45 +23,42 @@
         </div>
 
         <div class="vehicle-grid">
-          <div 
+          <div
             class="vehicle-card"
             v-for="veh in vehicleTypes"
             :key="veh.id"
             @click="selectVehicle(veh)"
           >
-            <i class="icon">{{ veh.icon }}</i>
+            <span class="icon">{{ veh.icon }}</span>
             <p>{{ veh.label }}</p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Resultados Car Wash -->
+    <!-- RESULTADOS -->
     <div class="results" v-if="selectedVehicle">
       <h2>Car Wash recomendados para {{ selectedVehicle.label }}</h2>
 
-      <div 
-        class="carwash-card"
-        v-for="cw in filteredCarWash"
-        :key="cw.id"
-      >
+      <div class="carwash-card" v-for="cw in filteredCarWash" :key="cw.id">
         <img :src="cw.image" class="cw-img" />
 
         <div class="cw-info">
           <h3>{{ cw.name }}</h3>
           <p>{{ cw.desc }}</p>
 
-          <p class="cw-rating">⭐ {{ cw.rating }} • {{ cw.distance }} km • {{ cw.price }}</p>
+          <p class="cw-rating">
+            ⭐ {{ cw.rating }} • {{ cw.distance }} km • {{ cw.price }}
+          </p>
 
           <div class="btn-row">
-            <button 
-              class="btn-details"
-              @click="$router.push(`/carwash/${cw.id}`)"
-            > 
+            
+            <button  class="btn-details" @click="$router.push(`/carwash_d`)">
               Ver Detalles
             </button>
 
-            <button class="btn-route">Cómo Llegar</button>
+            
+            <button class="btn-route">Cómo llegar</button>
           </div>
         </div>
       </div>
@@ -61,6 +66,7 @@
 
   </div>
 </template>
+
 
 <script setup>
 import { ref, computed } from "vue";
@@ -127,37 +133,72 @@ function selectVehicle(veh) {
 
 <style scoped>
 .home {
-  max-width: 1000px;
-  margin: auto;
-  padding: 20px;
+  width: 100%;
 }
 
-/* Botón principal */
-.btn-main {
-  background-color: #64d9d9;
-  padding: 15px 25px;
-  border: none;
-  font-size: 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-bottom: 20px;
-}
-
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
+/* HERO VIDEO */
+.hero {
+  position: relative;
+  height: 80vh;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.modal {
-  background: #64d9d9;
-  padding: 25px;
+.hero video {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(20, 93, 160, 0.7),
+    rgba(0, 0, 0, 0.7)
+  );
+}
+
+.btn-main {
+  position: relative;
+  z-index: 2;
+  padding: 18px 35px;
+  font-size: 20px;
   border-radius: 14px;
-  width: 500px;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-weight: bold;
+  background: linear-gradient(135deg, #145da0, #1e88e5);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  transition: 0.3s;
+}
+
+.btn-main:hover {
+  transform: scale(1.05);
+}
+
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.modal {
+  width: 520px;
+  padding: 30px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #ffffff, #f1f6fb);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.3);
 }
 
 .modal-header {
@@ -167,77 +208,93 @@ function selectVehicle(veh) {
 }
 
 .close-btn {
-  background: #700c0c;
-  border: none;
+  background: linear-gradient(135deg, #7b0d0d, #d32f2f);
   color: white;
+  border: none;
   padding: 6px 10px;
   border-radius: 50%;
   cursor: pointer;
 }
 
 .vehicle-grid {
-  margin-top: 20px;
+  margin-top: 25px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 15px;
 }
 
 .vehicle-card {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  cursor: pointer;
-  text-align: center;
-}
-
-/* 🔥 BLOQUE COMPLETO CON FONDO VINO */
-.carwash-card {
-  background: #600000;   /* Color vino */
+  background: linear-gradient(135deg, #145da0, #1e88e5);
   color: white;
-  display: flex;
-  border-radius: 12px;
-  padding: 15px;
-  margin-top: 20px;
-  gap: 15px;
-  align-items: center;
+  padding: 18px;
+  border-radius: 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-/* Imagen */
+.vehicle-card:nth-child(3n) {
+  background: linear-gradient(135deg, #ffc107, #ff9800);
+  color: black;
+}
+
+.vehicle-card:nth-child(2n) {
+  background: linear-gradient(135deg, #7b0d0d, #c62828);
+}
+
+.vehicle-card:hover {
+  transform: translateY(-5px);
+}
+
+/* RESULTS */
+.results {
+  max-width: 1000px;
+  margin: 50px auto;
+  padding: 20px;
+}
+
+.carwash-card {
+  display: flex;
+  gap: 15px;
+  padding: 18px;
+  border-radius: 16px;
+  margin-top: 20px;
+  color: white;
+  background: linear-gradient(135deg, #7b0d0d, #b71c1c);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
 .cw-img {
-  width: 130px;
+  width: 140px;
   height: 120px;
-  border-radius: 8px;
+  border-radius: 10px;
   object-fit: cover;
 }
 
-/* Información sin fondo separado */
 .cw-info {
   flex: 1;
-  background: transparent;
 }
 
-/* Botones */
 .btn-row {
   display: flex;
   gap: 10px;
   margin-top: 10px;
 }
 
-.btn-details,
-.btn-route {
+.btn-details {
+  background: linear-gradient(135deg, #145da0, #1e88e5);
+  color: white;
   border: none;
   padding: 8px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.btn-details {
-  background: #64d9d9;
-  color: black;
+  border-radius: 10px;
 }
 
 .btn-route {
-  background: #145da0;
-  color: white;
+  background: linear-gradient(135deg, #ffc107, #ff9800);
+  color: black;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
 }
+
 </style>
