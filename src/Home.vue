@@ -5,7 +5,7 @@
     <div class="content">
       <!-- Lista de Car Wash -->
       <div class="carwash-list">
-        <h2>Ubicaciones de los Car Wash</h2>
+        <h2  >Ubicaciones de los Car Wash</h2>
         <div
           class="carwash-item"
           v-for="(carwash, index) in carwashes"

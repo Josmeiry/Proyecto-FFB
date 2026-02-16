@@ -1,8 +1,12 @@
 <template>
-  <div class="login-container">
-    <div class="login-box">
+  <div class="login-container px-4 sm:px-0">
+    <div
+      class="login-box w-full max-w-md mx-auto"
+    >
 
-      <h2>Iniciar Sesión</h2>
+      <h2 class="text-xl sm:text-2xl md:text-3xl">
+        Iniciar Sesión
+      </h2>
 
       <!-- LOGIN -->
       <form @submit.prevent="loginUser">
@@ -11,14 +15,14 @@
         <button type="submit">Entrar</button>
       </form>
 
-      <p class="toggle-text">
+      <p class="toggle-text text-sm sm:text-base">
         ¿No tienes cuenta?
         <span @click="toggleRegister">Regístrate aquí</span>
       </p>
 
       <!-- REGISTRO -->
       <div v-if="mostrarRegistro">
-        <h2>Registro</h2>
+        <h2 class="text-lg sm:text-xl">Registro</h2>
 
         <form @submit.prevent="registerUser">
           <input type="text" v-model="registerNombre" placeholder="Nombre completo" required />
@@ -115,39 +119,43 @@ const irAdmin = () => router.push("/login-admin");
 
 
 <style scoped>
+/* CONTENEDOR */
 .login-container {
+  min-height: calc(100vh - 70px);
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
   background: #145da0;
 }
 
+/* CAJA LOGIN */
 .login-box {
   background: white;
-  padding: 30px;
-  width: 380px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  text-align: center;
+  padding: 28px 24px;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
 }
 
+/* INPUTS */
 input {
   width: 100%;
-  padding: 10px;
-  margin: 8px 0;
+  padding: 12px;
+  margin-bottom: 12px;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 8px;
+  font-size: 16px;
 }
 
+/* BOTONES */
 button {
   width: 100%;
-  padding: 10px;
-  margin-top: 10px;
+  padding: 12px;
+  margin-top: 8px;
   border: none;
+  border-radius: 8px;
   background: #3498db;
   color: white;
-  border-radius: 5px;
+  font-size: 16px;
   cursor: pointer;
 }
 
@@ -155,19 +163,29 @@ button:hover {
   background: #2980b9;
 }
 
+/* BOTÓN ADMIN */
 .btn-admin {
   background: #16a085;
-  margin-top: 15px;
+  margin-top: 12px;
+}
+
+/* TEXTO */
+.toggle-text {
+  text-align: center;
+  margin: 14px 0;
 }
 
 .toggle-text span {
   color: #3498db;
-  cursor: pointer;
   font-weight: bold;
+  cursor: pointer;
 }
 
+/* MENSAJE */
 .mensaje {
-  margin-top: 15px;
+  margin-top: 14px;
+  text-align: center;
   color: red;
 }
+
 </style>

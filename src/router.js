@@ -9,12 +9,13 @@ import Detally_CarWash from './Detally_CarWash.vue'
 import Dashboard_Carwash from './Dashboard_Carwash.vue' 
 import LoginAdmin from './LoginAdmin.vue'
 import component from './component.vue'
+import InicioPage from './InicioPage.vue'
 
 
 
 
 const routes = [
-  { path: '/', component: Home },
+  { path: '/', component: InicioPage },
   { path: '/login', component: Loggin },
   /*{path: '/AdminLogin', component: AdminLogin },*/
   {path: '/login-admin', component: LoginAdmin},
@@ -26,7 +27,7 @@ const routes = [
   {path: '/homeview', component: HomeView},
   {path: '/Dashboard_CarWash', component: Dashboard_Carwash},
   
-
+   {path: '/inicioP', component: InicioPage },
 
   {path: '/component', component: component}
 ]

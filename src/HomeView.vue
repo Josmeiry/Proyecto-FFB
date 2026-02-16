@@ -3,13 +3,16 @@
 
     <!-- VIDEO HERO -->
     <div class="hero">
-      <video autoplay muted loop playsinline >
-        <source src="/videocaewash.mp4" type="video/mp4" />
+      <video autoplay muted loop playsinline
+        class="hero-video"
+       >
+       <source src="/hero-video.mp4" type="video/mp4" />
+       Tu navegador no soporta video HTML5.
       </video>
 
       <div class="hero-overlay"></div>
 
-      <button class="btn-main" @click="openModal = true">
+      <button class="buscar-btn" @click="openModal = true">
         Buscar mi tipo de carro
       </button>
     </div>
@@ -136,69 +139,91 @@ function selectVehicle(veh) {
   width: 100%;
 }
 
-/* HERO VIDEO */
+/* ===============================
+   HERO VIDEO
+================================ */
 .hero {
   position: relative;
   height: 80vh;
   overflow: hidden;
+
   display: flex;
   justify-content: center;
   align-items: center;
+
 }
 
-.hero video {
+.hero-video {
   position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  z-index: 0;
 }
 
+/* overlay OSCURECE pero no tapa */
 .hero-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(20, 93, 160, 0.7),
-    rgba(0, 0, 0, 0.7)
+    rgba(20, 93, 160, 0.35),
+    rgba(0, 0, 0, 0.35)
   );
+  z-index: 1;
+  pointer-events: none;
 }
 
-.btn-main {
-  position: relative;
-  z-index: 2;
-  padding: 18px 35px;
-  font-size: 20px;
-  border-radius: 14px;
-  border: none;
-  cursor: pointer;
+/* ===============================
+   BOTÓN PRINCIPAL (ARREGLADO)
+================================ */
+.buscar-btn {
+  all: unset;               /* 💣 borra reglas globales */
+  
+  display: inline-flex;     /* 🔥 evita barra */
+  align-items: center;
+  justify-content: center;
+
+  padding: 14px 28px;
+  font-size: 18px;
+  font-weight: 600;
+
+  background: #1e73be;
   color: white;
-  font-weight: bold;
-  background: linear-gradient(135deg, #145da0, #1e88e5);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-  transition: 0.3s;
+
+  border-radius: 10px;
+  cursor: pointer;
+  z-index: 5;
 }
 
-.btn-main:hover {
-  transform: scale(1.05);
+
+/* quitar focus azul */
+.buscar-btn:focus,
+.buscar-btn:active {
+  outline: none;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.35);
 }
 
-/* MODAL */
+/* ===============================
+   MODAL
+================================ */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.55);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10;
+  z-index: 50;
 }
 
 .modal {
   width: 520px;
   padding: 30px;
   border-radius: 20px;
-  background: linear-gradient(135deg, #ffffff, #f1f6fb);
-  box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+  background: linear-gradient(135deg, #ffffff, #f2f6fb);
+  box-shadow: 0 18px 45px rgba(0,0,0,0.35);
 }
 
 .modal-header {
@@ -208,7 +233,7 @@ function selectVehicle(veh) {
 }
 
 .close-btn {
-  background: linear-gradient(135deg, #7b0d0d, #d32f2f);
+  background: #d32f2f;
   color: white;
   border: none;
   padding: 6px 10px;
@@ -216,6 +241,9 @@ function selectVehicle(veh) {
   cursor: pointer;
 }
 
+/* ===============================
+   VEHÍCULOS
+================================ */
 .vehicle-grid {
   margin-top: 25px;
   display: grid;
@@ -233,68 +261,16 @@ function selectVehicle(veh) {
   transition: 0.3s;
 }
 
-.vehicle-card:nth-child(3n) {
-  background: linear-gradient(135deg, #ffc107, #ff9800);
-  color: black;
-}
-
-.vehicle-card:nth-child(2n) {
-  background: linear-gradient(135deg, #7b0d0d, #c62828);
-}
-
 .vehicle-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
 }
 
-/* RESULTS */
+/* ===============================
+   RESULTS
+================================ */
 .results {
   max-width: 1000px;
   margin: 50px auto;
   padding: 20px;
 }
-
-.carwash-card {
-  display: flex;
-  gap: 15px;
-  padding: 18px;
-  border-radius: 16px;
-  margin-top: 20px;
-  color: white;
-  background: linear-gradient(135deg, #7b0d0d, #b71c1c);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
-
-.cw-img {
-  width: 140px;
-  height: 120px;
-  border-radius: 10px;
-  object-fit: cover;
-}
-
-.cw-info {
-  flex: 1;
-}
-
-.btn-row {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.btn-details {
-  background: linear-gradient(135deg, #145da0, #1e88e5);
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 10px;
-}
-
-.btn-route {
-  background: linear-gradient(135deg, #ffc107, #ff9800);
-  color: black;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 10px;
-}
-
 </style>

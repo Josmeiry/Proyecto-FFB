@@ -1,6 +1,6 @@
 <template>
   <AdminLogin 
-    @close="closeModal" 
+    @close="emitClose"
     @success="goToCarWash" 
   />
 </template>

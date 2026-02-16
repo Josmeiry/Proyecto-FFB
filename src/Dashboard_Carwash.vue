@@ -1,7 +1,14 @@
 <template>
   <div class="layout">
+
+    <!-- HEADER MOBILE -->
+    <header class="mobile-header">
+      <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">☰</button>
+      
+    </header>
+
     <!-- SIDEBAR -->
-    <aside class="sidebar">
+    <aside class="sidebar" :class="{ open: sidebarOpen }">
       <div class="sidebar-top">
         <img class="avatar" :src="profileImage || defaultImg" />
         <h3>{{ carwash.nombre_carwash }}</h3>
@@ -15,30 +22,42 @@
         <button :class="{ active: active === 'perfil' }" @click="goTo('perfil')">
           Gestión de Perfil
         </button>
-        <!--
-        <button :class="{ active: active === 'estadisticas' }" @click="goTo('estadisticas')">
-          Estadísticas Clientes
-        </button>
-        -->
-        <button :class="{ active: active === 'configuracion' }" @click="goTo('configuracion')">
+        <button @click="open = true">
           Configuración
         </button>
+        <ConfiguracionCW v-if="open" @close="open = false" />
+        
         <button :class="{ active: active === 'galeria' }" @click="goTo('galeria')">
           Galería
         </button>
       </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn-public" @click="goPublicProfile">
+          Ver Perfil Público
+        </button>
+
+        <button class="btn-link" @click="goHelp">
+          Centro de Ayuda
+        </button>
+
+        <button class="btn-link logout" @click="logout">
+          Cerrar Sesión
+        </button>
+      </div>
     </aside>
 
     <!-- MAIN -->
     <main class="main">
+
       <!-- DASHBOARD -->
       <section id="dashboard">
         <h1 class="title">Dashboard</h1>
         <div class="stats">
           <div class="stat"><span>Clientes</span><strong>120</strong></div>
           <div class="stat"><span>Servicios</span><strong>8</strong></div>
-          <div class="stat"><span>Reservas</span><strong>34</strong></div>
-          <div class="stat"><span>Ingresos</span><strong>$45,000</strong></div>
+          <div class="stat"><span>Siguiente Pago</span><strong>8 Marzo</strong></div>
+          <div class="stat"><span>Cuota</span><strong>$20,000</strong></div>
         </div>
       </section>
 
@@ -46,24 +65,23 @@
       <section id="perfil" class="box">
         <h2>Perfil del CarWash</h2>
 
-        <!-- FOTO PERFIL -->
         <div class="profile">
           <img :src="profileImage || defaultImg" />
           <input type="file" @change="changeProfile" />
         </div>
 
-        <!-- DATOS -->
         <div class="form">
           <input placeholder="Nombre" v-model="carwash.nombre_carwash" />
           <input placeholder="Correo" v-model="carwash.correo" disabled />
           <input placeholder="Teléfono" v-model="carwash.telefono" />
+          <input placeholder="Horario" v-model="carwash.horario" />
+          <input placeholder="Descripcion" v-model="carwash.descripcion" />
         </div>
-        <div class="btn-main" >
-          <button  @click="guardarCambios">
-            Guardar cambios
-          </button>
+
+        <div class="btn-main">
+          <button @click="guardarCambios">Guardar cambios</button>
         </div>
-        <!-- DIRECCIÓN (NUEVO, TEXTO) -->
+
         <h3 class="sub">Dirección</h3>
 
         <div class="form">
@@ -80,29 +98,14 @@
           <button @click="guardarOActualizarDireccion">
             {{ carwash.id_direccion ? "Actualizar dirección" : "Guardar dirección" }}
           </button>
-
         </div>
-
-        
 
         <p v-if="mensaje">{{ mensaje }}</p>
       </section>
 
-      <!-- ESTADISTICAS
-      <section id="estadisticas" class="box">
-        <h2>Estadísticas Clientes</h2>
-        <p>Aquí irán gráficas y reportes.</p>
-      </section>
- -->
-      <!-- CONFIGURACION -->
-      <section id="configuracion" class="box">
-        <h2>Configuración</h2>
-        <p>Ajustes del sistema.</p>
-      </section>
-
       <!-- GALERIA -->
       <section id="galeria" class="box">
-        <h2>Galería del CarWash</h2>
+        <h2>Galería</h2>
 
         <div class="gallery">
           <div v-for="(img, i) in galeria" :key="i" class="image">
@@ -113,16 +116,43 @@
 
         <input type="file" multiple @change="agregarImagenes" />
       </section>
+
     </main>
+
+
+
+      
+    
+
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import ConfiguracionCW from "./components/ConfiguracionCW.vue";
+
+
+
 
 export default {
+   components: {
+    ConfiguracionCW
+  },
   data() {
     return {
+      /* UI */
+      open: false,
+      sidebarOpen: false, // PARA RESPONSIVE
+      error: false,
+      settings: {
+        promo: true,
+        reviews: false,
+        reminders: true,
+        location: true,
+        darkMode: false
+      },
+
+      /* APP */
       active: "dashboard",
       mensaje: "",
       id_carwash: null,
@@ -159,9 +189,31 @@ export default {
     this.cargarGaleriaLocal();
   },
 
+  watch: {
+    // 🌙 DARK MODE REAL
+    "settings.darkMode"(val) {
+      document.body.classList.toggle("dark", val);
+    }
+  },
+
   methods: {
     /* ===============================
-       🔹 CARGAR DATOS DEL CARWASH
+       🔹 UI
+    =============================== */
+    toggleSidebar() {
+      this.sidebarOpen = !this.sidebarOpen;
+    },
+
+    goTo(section) {
+      this.active = section;
+      this.sidebarOpen = false;
+
+      const el = document.getElementById(section);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    },
+
+    /* ===============================
+       🔹 DATOS CARWASH
     =============================== */
     async cargarDatos() {
       try {
@@ -179,34 +231,22 @@ export default {
       }
     },
 
-    /* ===============================
-       🔹 MAPEAR DIRECCIÓN
-    =============================== */
     mapearDireccionDesdeBackend(direccion) {
       if (!direccion || !direccion.Calle) return;
 
       this.carwash.id_direccion = direccion.id_direccion;
 
       this.direccion = {
-        pais:
-          direccion.Calle.Barrio?.Ciudad?.Municipio?.Provincia?.Region?.Pais
-            ?.nombre || "",
-        region:
-          direccion.Calle.Barrio?.Ciudad?.Municipio?.Provincia?.Region
-            ?.nombre || "",
-        provincia:
-          direccion.Calle.Barrio?.Ciudad?.Municipio?.Provincia?.nombre || "",
-        municipio:
-          direccion.Calle.Barrio?.Ciudad?.Municipio?.nombre || "",
+        pais: direccion.Calle.Barrio?.Ciudad?.Municipio?.Provincia?.Region?.Pais?.nombre || "",
+        region: direccion.Calle.Barrio?.Ciudad?.Municipio?.Provincia?.Region?.nombre || "",
+        provincia: direccion.Calle.Barrio?.Ciudad?.Municipio?.Provincia?.nombre || "",
+        municipio: direccion.Calle.Barrio?.Ciudad?.Municipio?.nombre || "",
         ciudad: direccion.Calle.Barrio?.Ciudad?.nombre || "",
         barrio: direccion.Calle.Barrio?.nombre || "",
         calle: direccion.Calle?.nombre || ""
       };
     },
 
-    /* ===============================
-       🔹 GUARDAR DATOS CARWASH
-    =============================== */
     async guardarCambios() {
       await axios.put(
         `http://localhost:2629/carwash/${this.id_carwash}`,
@@ -215,20 +255,15 @@ export default {
       this.mensaje = "Datos actualizados ✔";
     },
 
-    /* ===============================
-       🔹 GUARDAR / ACTUALIZAR DIRECCIÓN
-    =============================== */
     async guardarOActualizarDireccion() {
       try {
         if (this.carwash.id_direccion) {
-          // 🔁 ACTUALIZAR
           await axios.put(
             `http://localhost:2629/direccion/${this.carwash.id_direccion}`,
             { direccion: this.direccion }
           );
           this.mensaje = "Dirección actualizada ✔";
         } else {
-          // 🆕 CREAR
           const res = await axios.post(
             "http://localhost:2629/direccion",
             {
@@ -236,12 +271,10 @@ export default {
               direccion: this.direccion
             }
           );
-
           this.carwash.id_direccion = res.data.id_direccion;
           this.mensaje = "Dirección guardada ✔";
         }
 
-        // 🔄 RECARGAR DATOS PARA QUE SE QUEDE
         await this.cargarDatos();
       } catch (error) {
         console.error(error);
@@ -250,7 +283,7 @@ export default {
     },
 
     /* ===============================
-       🔹 PERFIL Y GALERÍA
+       🔹 PERFIL / GALERÍA
     =============================== */
     changeProfile(e) {
       const r = new FileReader();
@@ -271,10 +304,7 @@ export default {
         const r = new FileReader();
         r.onload = ev => {
           this.galeria.push({ base64: ev.target.result });
-          localStorage.setItem(
-            "galeria_carwash",
-            JSON.stringify(this.galeria)
-          );
+          localStorage.setItem("galeria_carwash", JSON.stringify(this.galeria));
         };
         r.readAsDataURL(f);
       });
@@ -282,10 +312,7 @@ export default {
 
     eliminarImagen(i) {
       this.galeria.splice(i, 1);
-      localStorage.setItem(
-        "galeria_carwash",
-        JSON.stringify(this.galeria)
-      );
+      localStorage.setItem("galeria_carwash", JSON.stringify(this.galeria));
     },
 
     cargarGaleriaLocal() {
@@ -293,11 +320,28 @@ export default {
       if (g) this.galeria = JSON.parse(g);
     },
 
-    goTo(section) {
-      this.active = section;
-      document
-        .getElementById(section)
-        .scrollIntoView({ behavior: "smooth" });
+    /* ===============================
+       🔹 FOOTER SIDEBAR
+    =============================== */
+    goPublicProfile() {
+      if (!this.id_carwash) return;
+      this.$router.push(`/carwash/${this.id_carwash}`);
+    },
+
+    goHelp() {
+      this.$router.push("/help");
+    },
+
+    logout() {
+      const profileImage = localStorage.getItem("profileImage");
+      const galeria = localStorage.getItem("galeria_carwash");
+
+      localStorage.clear();
+
+      if (profileImage) localStorage.setItem("profileImage", profileImage);
+      if (galeria) localStorage.setItem("galeria_carwash", galeria);
+
+      this.$router.push("/login-carwash");
     }
   }
 };
@@ -308,26 +352,28 @@ export default {
 
 
 <style scoped>
+/* RESET */
 * {
   box-sizing: border-box;
   font-family: Arial, sans-serif;
 }
 
-/* LAYOUT */
+/* ===== LAYOUT ===== */
 .layout {
   display: flex;
-  height: 100vh;
-  background: linear-gradient(135deg, #e6f0fa, #ffffff);
+  min-height: 100vh;
+  background: #f5f8fc;
 }
 
-/* SIDEBAR */
+/* ===== SIDEBAR ===== */
 .sidebar {
   width: 260px;
-  background: white;
-  color: white;
-  padding: 25px 15px;
+  min-width: 260px;
+  background: #ffffff;
+  padding: 25px 20px;
   display: flex;
   flex-direction: column;
+  border-right: 1px solid #eee;
 }
 
 .sidebar-top {
@@ -335,16 +381,19 @@ export default {
   margin-bottom: 30px;
 }
 
-.sidebar-top h3,
+.sidebar-top h3 {
+  margin: 10px 0 4px;
+  color: #000;
+}
+
 .sidebar-top small {
-  color: black;
+  color: #555;
 }
 
 .avatar {
   width: 90px;
   height: 90px;
   border-radius: 50%;
-  margin-bottom: 10px;
   border: 3px solid #ffc107;
 }
 
@@ -355,47 +404,74 @@ export default {
   gap: 10px;
 }
 
-.sidebar button {
+.menu button {
   width: 100%;
   padding: 12px 15px;
-  background: transparent;
+  border-radius: 12px;
   border: none;
-  cursor: pointer;
-  border-radius: 10px;
+  background: transparent;
   text-align: left;
+  cursor: pointer;
+  color: #333;
   font-size: 14px;
-  transition: 0.3s;
 }
 
-.sidebar button:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.sidebar button.active {
-  background: linear-gradient(135deg, #ffc107, #ffda44);
-  color: black;
+.menu button.active {
+  background: #ffc107;
   font-weight: bold;
 }
 
-/* MAIN */
-.main {
-  flex: 1;
-  padding: 30px;
-  overflow-y: auto;
+/* FOOTER */
+.sidebar-footer {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
+.btn-public {
+  background: #f2b705;
+  border: none;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.logout {
+  color: #c0392b;
+}
+
+/* ===== MAIN ===== */
+.main {
+  flex: 1;
+  padding: 40px;
+}
+
+/* CONTENEDOR INTERNO (ESTO ES LA CLAVE) */
+.main > section {
+  max-width: 1200px;
+}
+
+/* ===== TITULOS ===== */
 .title {
-  font-size: 30px;
+  font-size: 32px;
   margin-bottom: 25px;
   color: #145da0;
 }
 
-/* STATS */
+/* ===== STATS ===== */
 .stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
-  margin-bottom: 40px;
+  margin-bottom: 35px;
 }
 
 .stat {
@@ -405,50 +481,37 @@ export default {
   box-shadow: 0 10px 25px rgba(0,0,0,0.15);
 }
 
-.stat:nth-child(1) {
-  background: linear-gradient(135deg, #145da0, #1e88e5);
-}
-
-.stat:nth-child(2) {
-  background: linear-gradient(135deg, #7b0d0d, #b71c1c);
-}
-
-.stat:nth-child(3) {
-  background: linear-gradient(135deg, #f3ca50, #f6ad3f);
-  color: black;
-}
-
-.stat:nth-child(4) {
-  background: linear-gradient(135deg, #7b0d0d, #ff5252);
-}
-
 .stat span {
   background: rgba(255,255,255,0.9);
   color: black;
   padding: 5px 10px;
   border-radius: 8px;
   font-weight: bold;
+  
 }
 
 .stat strong {
-  font-size: 28px;
   display: block;
+  font-size: 26px;
   margin-top: 12px;
-}
-.stat strong {
   background-color: transparent;
 }
 
-/* BOX */
+.stat:nth-child(1) { background: #1e88e5; }
+.stat:nth-child(2) { background: #b71c1c; }
+.stat:nth-child(3) { background: #f6ad3f; color: black; }
+.stat:nth-child(4) { background: #ff5252; }
+
+/* ===== BOX ===== */
 .box {
-  background: linear-gradient(135deg, #ffffff, #f1f6fb);
+  background: white;
   padding: 30px;
   border-radius: 18px;
-  margin-bottom: 30px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  margin-bottom: 40px;
 }
 
-/* PROFILE */
+/* ===== PROFILE ===== */
 .profile {
   display: flex;
   align-items: center;
@@ -457,17 +520,16 @@ export default {
 }
 
 .profile img {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  border: 3px solid #145da0;
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
 }
 
-/* FORM */
+/* ===== FORM ===== */
 .form {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 18px;
+  gap: 20px;
 }
 
 .form input {
@@ -476,130 +538,104 @@ export default {
   border: 1px solid #ccc;
 }
 
-/* BOTONES */
+/* ===== BOTONES ===== */
 .btn-main {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 40px;
+  margin: 30px 0;
 }
 
 .btn-main button {
-  flex: 1;
+  width: 100%;
   padding: 14px;
-  border: none;
   border-radius: 12px;
-  cursor: pointer;
-  font-weight: bold;
-  color: white;
-  transition: 0.3s;
-}
-
-.btn-main button:first-child {
-  background: linear-gradient(135deg, #f3ca50, #f6ad3f);
-}
-
-
-
-.btn-main button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.2);
-}
-
-
-
-
-
-.botones {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 40px;
-}
-
-.botones button {
-  flex: 1;
-  padding: 14px;
   border: none;
-  border-radius: 12px;
-  cursor: pointer;
+  background: #f6ad3f;
   font-weight: bold;
-  color: white;
-  transition: 0.3s;
+  cursor: pointer;
 }
 
-.botones button:first-child {
-  background: linear-gradient(135deg, #145da0, #1e88e5);
-}
-
-.botones button:last-child {
-  background: linear-gradient(135deg, #7b0d0d, #d32f2f);
-}
-
-.botones button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.2);
-}
-
-/* GALERIA */
+/* ===== GALERIA ===== */
 .gallery {
   display: flex;
-  flex-wrap: wrap;
   gap: 15px;
-  margin-bottom: 15px;
-}
-
-.gallery .image {
-  position: relative;
+  flex-wrap: wrap;
 }
 
 .gallery img {
   width: 100px;
   height: 100px;
-  border-radius: 12px;
   object-fit: cover;
-  border: 2px solid #145da0;
+  border-radius: 12px;
 }
 
-.gallery button {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  background: red;
-  border: none;
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 12px;
-  padding: 2px 6px;
-}
-
-
-
-.textarea {
-  width: 100%;
-  margin-top: 15px;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-}
-.sub {
-  margin: 25px 0 10px;
-  color: #145da0;
-}
-
-
-
-/* RESPONSIVE */
-@media (max-width: 900px) {
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
   .stats {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-width: 100%;
+    border-right: none;
   }
 
   .form {
     grid-template-columns: 1fr;
   }
 
-  .botones {
-    flex-direction: column;
+  .stats {
+    grid-template-columns: 1fr;
   }
 }
+
+/* ===== HEADER MOBILE ===== */
+.mobile-header {
+  display: none;
+  background: linear-gradient(90deg, #0e3f6f, #145da0, #1f7acb);
+  padding: 12px 16px;
+}
+
+.menu-btn {
+  font-size: 24px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+/* ===== SIDEBAR MOBILE ===== */
+@media (max-width: 768px) {
+  .mobile-header {
+    display: flex;
+    align-items: center;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 260px;
+    background: white;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .main {
+    padding: 20px;
+  }
+}
+
+
 </style>
