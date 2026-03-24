@@ -36,8 +36,9 @@
         <button class="btn-public" @click="goPublicProfile">
           Ver Perfil Público
         </button>
+      
 
-        <button class="btn-link" @click="goHelp">
+        <button class="btn-link" @click="goHelp" style="color: green;" >
           Centro de Ayuda
         </button>
 
@@ -109,7 +110,7 @@
 
         <div class="gallery">
           <div v-for="(img, i) in galeria" :key="i" class="image">
-            <img :src="img.base64" />
+            <img :src="img.url" />
             <button @click="eliminarImagen(i)">X</button>
           </div>
         </div>
@@ -130,7 +131,6 @@
 <script>
 import axios from "axios";
 import ConfiguracionCW from "./components/ConfiguracionCW.vue";
-
 
 
 
@@ -178,15 +178,30 @@ export default {
   },
 
   async mounted() {
-    this.id_carwash = localStorage.getItem("id_carwash");
-    if (!this.id_carwash) {
-      this.$router.push("/login-carwash");
-      return;
-    }
+    // this.id_carwash = localStorage.getItem("id_carwash");
+    // if (!this.id_carwash) {
+    //   this.$router.push("/login-carwash");
+    //   return;
+    // }
 
-    await this.cargarDatos();
-    this.cargarFotoPerfil();
-    this.cargarGaleriaLocal();
+    // await this.cargarDatos();
+    // this.cargarFotoPerfil();
+    // this.cargarGaleriaLocal();
+    // await this.cargarGaleria();
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+
+  if (!usuario || usuario.tipo !== "carwash") {
+    this.$router.push("/login");
+    return;
+  }
+
+  this.id_carwash = usuario.id_carwash;
+
+  await this.cargarDatos();
+  this.cargarFotoPerfil();
+  this.cargarGaleriaLocal();
+  await this.cargarGaleria();
+    
   },
 
   watch: {
@@ -226,6 +241,8 @@ export default {
         if (this.carwash.DireccionCarwash) {
           this.mapearDireccionDesdeBackend(this.carwash.DireccionCarwash);
         }
+
+        console.log(this.carwash);
       } catch (error) {
         console.error("Error cargando carwash:", error);
       }
@@ -300,32 +317,48 @@ export default {
     },
 
     agregarImagenes(e) {
-      [...e.target.files].forEach(f => {
-        const r = new FileReader();
-        r.onload = ev => {
-          this.galeria.push({ base64: ev.target.result });
-          localStorage.setItem("galeria_carwash", JSON.stringify(this.galeria));
-        };
-        r.readAsDataURL(f);
-      });
-    },
+  const files = e.target.files;
+
+  for (const file of files) {
+    const formData = new FormData();
+    formData.append("imagen", file);
+
+    axios.post(
+      `http://localhost:2629/galeria/${this.id_carwash}`,
+      formData
+    ).then(res => {
+      this.galeria.push(res.data);
+    });
+  }
+},
 
     eliminarImagen(i) {
-      this.galeria.splice(i, 1);
-      localStorage.setItem("galeria_carwash", JSON.stringify(this.galeria));
-    },
+  this.galeria.splice(i, 1);
+  localStorage.setItem(
+    `galeria_carwash_${this.id_carwash}`,
+    JSON.stringify(this.galeria)
+  );
+},
+    
 
     cargarGaleriaLocal() {
-      const g = localStorage.getItem("galeria_carwash");
-      if (g) this.galeria = JSON.parse(g);
+    const g = localStorage.getItem(`galeria_carwash_${this.id_carwash}`);
+    if (g) this.galeria = JSON.parse(g);
     },
+
+    async cargarGaleria() {
+    const res = await axios.get(
+    `http://localhost:2629/galeria/${this.id_carwash}`
+    );
+    this.galeria = res.data;
+   },
 
     /* ===============================
        🔹 FOOTER SIDEBAR
     =============================== */
     goPublicProfile() {
       if (!this.id_carwash) return;
-      this.$router.push(`/carwash/${this.id_carwash}`);
+      this.$router.push(`/detalle-carwash`);
     },
 
     goHelp() {
@@ -333,16 +366,17 @@ export default {
     },
 
     logout() {
-      const profileImage = localStorage.getItem("profileImage");
-      const galeria = localStorage.getItem("galeria_carwash");
+  // 1️⃣ Borrar sesión completa
+  localStorage.removeItem("usuario");
+  localStorage.removeItem("user_avatar");
+  localStorage.removeItem("id_carwash"); 
 
-      localStorage.clear();
+  // 2️⃣ Notificar a App.vue
+  window.dispatchEvent(new Event("storage"));
 
-      if (profileImage) localStorage.setItem("profileImage", profileImage);
-      if (galeria) localStorage.setItem("galeria_carwash", galeria);
-
-      this.$router.push("/login-carwash");
-    }
+  // 3️⃣ Redirigir correctamente
+  this.$router.push("/inicioP");
+}
   }
 };
 </script>
@@ -420,6 +454,8 @@ export default {
   background: #ffc107;
   font-weight: bold;
 }
+
+
 
 /* FOOTER */
 .sidebar-footer {
@@ -597,17 +633,39 @@ export default {
 /* ===== HEADER MOBILE ===== */
 .mobile-header {
   display: none;
-  background: linear-gradient(90deg, #0e3f6f, #145da0, #1f7acb);
-  padding: 12px 16px;
 }
 
-.menu-btn {
-  font-size: 24px;
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
+@media (max-width: 768px) {
+  .mobile-header {
+    display: block;
+    position: fixed;
+    top: 10px;
+    left: 15px; /* cambia a right:15px si lo quieres a la derecha */
+    z-index: 2000;
+    background: transparent;
+    padding: 0;
+  }
+
+  .menu-btn {
+    font-size: 24px;
+    background: #145da0;
+    border: none;
+    color: white;
+    width: 38px;
+    height: 45px;
+    border-radius: 12px;
+    cursor: pointer;
+    align-items: center;
+  }
 }
+
+
+@media (max-width: 768px) {
+  .main {
+    padding-top: 70px;
+  }
+}
+
 
 /* ===== SIDEBAR MOBILE ===== */
 @media (max-width: 768px) {

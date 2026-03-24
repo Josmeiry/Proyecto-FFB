@@ -2,21 +2,28 @@
   <div class="landing">
 
     <!-- Botón flotante -->
-    <button class="floating-btn" title="Buscar car wash">
-      🔍
-    </button>
+    <button class="floating-btn">🔍</button>
 
     <!-- HEADER -->
     <header>
       <nav class="navbar">
-        <div class="logo">MAJOAD</div>
-        <ul class="nav-links">
-          <li><a href="#inicio">Inicio</a></li>
-          <li><a href="#sobre-nosotros">Sobre nosotros</a></li>
-          <li><a href="#como-funciona">Cómo funciona</a></li>
-          <li><a href="#faq">FAQ</a></li>
-          <li><a href="#contacto">Contacto</a></li>
+
+        <!-- <div class="logo">MAJOAD</div> -->
+
+        <!-- MENÚ -->
+        <ul :class="['nav-links', { active: menuOpen }]"  >
+          <li style="background-color: transparent;" ><a href="#inicio" @click="closeMenu" style="background-color: transparent;" >Inicio</a></li>
+          <li  style="background-color: transparent;" ><a href="#sobre-nosotros" @click="closeMenu" style="background-color: transparent;" >Sobre nosotros</a></li>
+          <li style="background-color: transparent;" ><a href="#como-funciona" @click="closeMenu" style="background-color: transparent;" >Cómo funciona</a></li>
+          <li style="background-color: transparent;" ><a href="#faq" @click="closeMenu" style="background-color: transparent;" >FAQ</a></li>
+          <li style="background-color: transparent;" ><a href="#contacto" @click="closeMenu" style="background-color: transparent;" >Contacto</a></li>
         </ul>
+
+        <!-- BOTÓN -->
+        <button class="menu-btn" @click="menuOpen = !menuOpen">
+          ☰
+        </button>
+
       </nav>
     </header>
 
@@ -31,12 +38,19 @@
           </p>
 
           <div class="hero-actions"  style="background-color: transparent;" >
-            <input
+            <!-- <input
               type="text"
               placeholder="Ingresa tu ubicación"
               class="location-input"
-            />
-            <button class="primary-btn">Buscar car wash</button>
+            /> -->
+            
+
+            <!-- <router-link to="/homeview" class="animation-btn">
+             Buscar Car Wash
+            </router-link> -->
+            <button @click="buscarCarwash" class="animation-btn">
+             Buscar Car Wash
+            </button>
           </div>
         </div>
 
@@ -149,68 +163,131 @@
       </form>
     </section>
 
+        <!-- MODAL LOGIN AUTOMÁTICO -->
+    <div v-if="showLoginModal" class="login-overlay">
+      <div class="login-card">
+        <div class="login-icon">👤</div>
+        <h3>Inicia sesión</h3>
+        <p>
+          Para ver más resultados y guardar tus favoritos,
+          inicia sesión en MAJOAD.
+        </p>
+
+        <div class="login-actions">
+          <router-link to="/login" class="login-btn">
+            Iniciar sesión
+          </router-link>
+
+          <button @click="showLoginModal = false" class="cancel-btn" style="background-color: transparent; color: black;">
+            Ahora no
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- FOOTER -->
     <footer class="footer">
       <p style="background-color: transparent;" >© {{ new Date().getFullYear() }} MAJOAD</p>
+      <div class="footer-links" style="background-color: transparent;" >
+        <a href="/copyright" style="background-color: transparent;"  target="_blank">Políticas de Privacidad</a> |
+        <a href="/terminos" style="background-color: transparent;"  target="_blank">Términos de Servicio</a>
+      </div>
     </footer>
 
   </div>
 </template>
 
-<script>
-export default {
-  name: "InicioPage",
-  data() {
-    return {
-      form: {
-        name: "",
-        email: "",
-        message: ""
-      },
+<script setup>
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 
-      faqs: [
-        {
-          question: "¿La plataforma cobra al usuario?",
-          answer: "No, el uso es completamente gratuito.",
-          open: false
-        },
-        {
-          question: "¿Puedo registrar mi car wash?",
-          answer: "Sí, desde el botón “Registrar mi car wash”.",
-          open: false
-        }
-      ]
-    };
+const router = useRouter();
+
+// MENU
+const menuOpen = ref(false);
+const closeMenu = () => {
+  menuOpen.value = false;
+};
+
+// MODAL
+const showLoginModal = ref(false);
+
+// FORM
+const form = ref({
+  name: "",
+  email: "",
+  message: ""
+});
+
+// FAQ
+const faqs = ref([
+  {
+    question: "¿La plataforma cobra al usuario?",
+    answer: "No, el uso es completamente gratuito.",
+    open: false
   },
-  methods: {
-    handleSubmit() {
-      alert("¡Gracias por contactarnos!");
-      this.form = { name: "", email: "", message: "" };
-    },
-    toggleFaq(index) {
-      this.faqs[index].open = !this.faqs[index].open;
-    },
-    sendEmail() {
-      const phone = "8093518191"; // TU NÚMERO RD sin +
-
-     const message = `
-     📩 *Nuevo contacto desde MAJOAD*
-     👤 Nombre: ${this.form.name}
-     📧 Correo: ${this.form.email}
-     💬 Mensaje: ${this.form.message}
-       `;
-
-     const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-     window.open(url, "_blank");
-
-     this.form = { name: "", email: "", message: "" };
-      alert("¡Gracias por contactarnos! Te responderemos pronto.");
-
+   {
+    question: "¿Puedo registrar mi car wash?",
+    answer: "Sí, desde el botón “Registrar mi car wash”.",
+    open: false
+   },
+  {
+    question: "¿Qué tipos de servicios puedo encontrar en Majoad?",
+    answer: "Podrás encontrar lavado básico, lavado premium, detailing, limpieza interior, encerado y otros servicios.",
+    open: false
     }
+]);
 
+// FUNCIONES
+const handleSubmit = () => {
+  alert("¡Gracias por contactarnos!");
+  form.value = { name: "", email: "", message: "" };
+};
+
+const toggleFaq = (index) => {
+  faqs.value[index].open = !faqs.value[index].open;
+};
+
+const sendEmail = () => {
+  const phone = "8093518191";
+
+  const message = `
+📩 Nuevo contacto
+Nombre: ${form.value.name}
+Correo: ${form.value.email}
+Mensaje: ${form.value.message}
+`;
+
+  const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+  window.open(url, "_blank");
+
+  form.value = { name: "", email: "", message: "" };
+};
+
+const buscarCarwash = () => {
+  const usuario = localStorage.getItem("usuario");
+
+  if (!usuario) {
+    localStorage.setItem("redirectAfterLogin", "/homeview");
+    showLoginModal.value = true;
+  } else {
+    router.push("/homeview");
   }
 };
+
+// MOUNTED
+onMounted(() => {
+  const usuario = localStorage.getItem("usuario");
+
+  if (!usuario) {
+    setTimeout(() => {
+      showLoginModal.value = true;
+    }, 10000);
+  }
+});
 </script>
+
+
 
 <style scoped>
 .landing {
@@ -238,22 +315,81 @@ export default {
 }
 
 /* Navbar */
+
 .navbar {
-  position: sticky;
-  top: 0;
+  position: relative; 
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 18px 48px;
-  background: rgba(255,255,255,0.9);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 4px 20px rgba(0,0,0,.05);
+  padding: 18px 24px;
+  background: rgba(255,255,255,0.95);
+  z-index: 100;
+  background-color: transparent;
 }
+
+/* LINKS DESKTOP */
+.nav-links {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+}
+
+/* BOTÓN */
+.menu-btn {
+  display: none;
+  font-size: 28px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+
+
+/* MOBILE */
+@media (max-width: 768px) {
+
+  .menu-btn {
+    display: block;
+  }
+
+  .nav-links {
+  position: absolute;
+  top: 100%; /* 🔥 justo debajo del navbar */
+  left: 0;
+  width: 100%;
+  background: #145da0;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0;
+  display: none;
+  z-index: 99;
+  display: none;
+}
+
+  .nav-links {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+}
+
+.nav-links.active {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0);
+  display: flex;
+}
+
+  .nav-links a {
+    color: white;
+  }
+}
+
 
 .logo {
   font-weight: 800;
   color: #0ea5e9;
   font-size: 20px;
+  
 }
 
 .nav-links {
@@ -475,6 +611,28 @@ export default {
   line-height: 1.6;
 }
 
+.animation-btn  {
+  font-size: 1rem;
+  padding: 0.8em 2em;
+  background-color: #0ea5e9;
+  border: 3px solid #f6ad3f;
+  border-radius: 1em;
+  color: #fff;
+  font-weight: bolder;
+  transition: cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.4s;
+  box-shadow: -5px 5px 0px 0px #f6ad3f;
+}
+
+.animation-btn:hover {
+  transform: translate(5px, -5px);
+}
+
+.animation-btn{
+  display: inline-block;
+  width: auto;
+  max-width: 260px;
+}
+
 /* Animación */
 .fade-enter-active,
 .fade-leave-active {
@@ -486,6 +644,112 @@ export default {
   transform: translateY(-6px);
 }
 
+/* LOGIN MODAL */
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  backdrop-filter: blur(4px);
+}
+
+.login-card {
+  background: white;
+  width: 320px;
+  padding: 28px;
+  border-radius: 18px;
+  text-align: center;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+  animation: fadeInScale 0.3s ease;
+}
+
+.login-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.login-card h3 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.login-card p {
+  color: #475569;
+  font-size: 15px;
+  margin-bottom: 20px;
+}
+
+.login-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.login-btn {
+  background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+  color: white;
+  padding: 12px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.cancel-btn {
+  background: white;
+  border: 1px solid #cbd5f5;
+  padding: 10px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+/* BOTÓN HAMBURGUESA */
+.menu-btn {
+  display: none;
+  font-size: 28px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+/* ===== RESPONSIVE btn ===== */
+@media (max-width: 768px) {
+  .menu-btn {
+    display: block;
+  }
+
+  nav {
+    position: absolute;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    background: #145da0;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 20px 0;
+    display: none;
+  }
+
+  nav.open {
+    display: flex;
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
 
 /* Footer */
 .footer {

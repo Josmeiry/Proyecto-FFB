@@ -24,9 +24,15 @@
         <button type="submit">Entrar</button>
       </form>
 
-      <button class="btn-cancel" @click="emitClose">
+      <!-- <button class="btn-cancel" @click="emitClose">
         Cancelar
-      </button>
+      </button> -->
+
+      <router-link to="/login" class="btn-cancel">
+          Cancelar
+        </router-link>
+
+      
 
       <p
         v-if="mensaje"
@@ -106,7 +112,7 @@ input {
 }
 
 /* BOTONES */
-button {
+button{
   width: 100%;
   padding: 12px;
   margin-top: 8px;
@@ -117,6 +123,21 @@ button {
   font-size: 16px;
   cursor: pointer;
 }
+
+.btn-cancel {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  border-radius: 8px;
+  background: #e5e5e5;
+  color: #333;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+
 
 button:hover {
   background: #2980b9;

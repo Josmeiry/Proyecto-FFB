@@ -10,7 +10,10 @@ import Dashboard_Carwash from './Dashboard_Carwash.vue'
 import LoginAdmin from './LoginAdmin.vue'
 import component from './component.vue'
 import InicioPage from './InicioPage.vue'
-
+import Detalle_CarWash from './Detalle_Carwash.vue'
+import ConfiguracionPerfil from './ConfiguracionPerfil.vue'
+import Copyright from './Views/Copyright.vue'
+import Terminos from './Views/Terminos.vue'
 
 
 
@@ -28,8 +31,12 @@ const routes = [
   {path: '/Dashboard_CarWash', component: Dashboard_Carwash},
   
    {path: '/inicioP', component: InicioPage },
+   {path: '/detalle-carwash', component: Detalle_CarWash},
+  {path: '/component', component: component},
+  {path: '/configuracion', component: ConfiguracionPerfil},
+  {path: '/copyright', name: 'copyright', component: Copyright},
+  {path: '/terminos', name: 'terminos', component: Terminos}
 
-  {path: '/component', component: component}
 ]
 
 export default createRouter({

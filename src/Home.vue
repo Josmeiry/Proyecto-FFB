@@ -24,8 +24,10 @@
     <footer>
       <article>
         <h3>Links</h3>
-        <p>Privacy Policy</p>
-        <p>Terms of Service</p>
+        <div class="footer-links" style="background-color: transparent;" >
+          <a href="/copyright" style="background-color: transparent;"  target="_blank">Políticas de Privacidad</a> |
+          <a href="/terminos" style="background-color: transparent;"  target="_blank">Términos de Servicio</a>
+        </div>
         <p>Contact Us</p>
       </article>
 
