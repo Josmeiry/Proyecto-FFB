@@ -2,6 +2,32 @@ name: CI - MAJOAD
 
 on:
   push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4   # 🔥 actualizado
+
+      - name: Instalar Node
+        uses: actions/setup-node@v4   # 🔥 actualizado
+        with:
+          node-version: 20
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Build del proyecto
+        run: npm run build
+name: CI - MAJOAD
+
+on:
+  push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
