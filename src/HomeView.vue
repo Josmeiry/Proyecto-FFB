@@ -31,9 +31,9 @@
             v-for="veh in vehicleTypes"
             :key="veh.id"
             @click="selectVehicle(veh)"
-          >
-            <span class="icon">{{ veh.icon }}</span>
-            <p>{{ veh.label }}</p>
+             >
+            <span class="icon" style="background-color: transparent;  " >{{ veh.icon }}</span>
+            <p style="background-color: transparent; color: black; " >{{ veh.label }}</p>
           </div>
         </div>
       </div>

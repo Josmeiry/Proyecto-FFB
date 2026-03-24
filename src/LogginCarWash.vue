@@ -51,8 +51,13 @@ const loginCarwash = async () => {
   "id_carwash",
   res.data.carwash.id_carwash
 );
+
     router.push("/Dashboard_CarWash");
-   
+    // localStorage.setItem('tipo', 'carwash')
+    localStorage.setItem(
+  "usuario",
+  JSON.stringify(res.data.carwash)
+);
 
   } catch (err) {
     mensaje.value = "Correo o contraseña incorrecta ❌";

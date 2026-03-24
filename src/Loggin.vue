@@ -72,18 +72,26 @@ const toggleRegister = () => {
 // LOGIN
 const loginUser = async () => {
   try {
-    const response = await axios.post("http://localhost:2629/login-usuario", {
-      correo: loginCorreo.value,
-      contrasena: loginContrasena.value,
-    });
+    const response = await axios.post(
+      "http://localhost:2629/login-usuario",
+      {
+        correo: loginCorreo.value,
+        contrasena: loginContrasena.value,
+      }
+    );
 
-    // Guardar usuario en localStorage
-    localStorage.setItem("usuario", JSON.stringify(response.data.usuario));
+    // 🔥 ESTA LÍNEA ES OBLIGATORIA
+    const usuario = response.data.usuario;
 
-    mensaje.value = "Inicio de sesión exitoso";
+    localStorage.setItem("usuario", JSON.stringify(usuario));
 
-    // Redirigir
-    router.push("/HomeView");
+    window.dispatchEvent(new Event("storage"));
+
+    if (usuario.tipo === "usuario") {
+      router.push("/homeview");
+    } else if (usuario.tipo === "carwash") {
+      router.push("/Dashboard_CarWash");
+    }
 
   } catch (error) {
     mensaje.value =
@@ -91,6 +99,31 @@ const loginUser = async () => {
   }
 };
 
+
+// const loginUser = async () => {
+//   try {
+//     const response = await axios.post("http://localhost:2629/login-usuario", {
+//       correo: loginCorreo.value,
+//       contrasena: loginContrasena.value,
+//     });
+
+//     const usuario = response.data.usuario;
+
+//     // SOLO guardamos esto
+//     localStorage.setItem("usuario", JSON.stringify(usuario));
+
+//     // Redirigir según tipo
+//     if (usuario.tipo === "usuario") {
+//       router.push("/homeview");
+//     } else if (usuario.tipo === "carwash") {
+//       router.push("/dashboard-carwash");
+//     }
+
+//   } catch (error) {
+//     mensaje.value =
+//       error.response?.data?.msg || "Error al iniciar sesión";
+//   }
+// };
 
 
 // REGISTRO
@@ -115,6 +148,17 @@ const registerUser = async () => {
 
 
 const irAdmin = () => router.push("/login-admin");
+
+// localStorage.setItem("usuario", JSON.stringify(usuario));
+
+// // 🔥 Forzar actualización del menú
+// window.dispatchEvent(new Event("storage"));
+
+// if (usuario.tipo === "usuario") {
+//   router.push("/homeview");
+// } else if (usuario.tipo === "carwash") {
+//   router.push("/Dashboard_CarWash");
+// }
 </script>
 
 

@@ -14,11 +14,43 @@
 
       <!-- MENÚ -->
       <nav :class="{ open: menuOpen }">
-        <router-link @click="closeMenu" to="/inicioP" style="background-color: transparent; margin-right: 40px; " >Inicio</router-link>
-        <router-link @click="closeMenu" to="/login" style="background-color: transparent; margin-right: 50px; " >Login</router-link>
-        <!-- <a href="#">Servicios</a>
-        <router-link @click="closeMenu" to="/component">Tarea</router-link> -->
-      </nav>
+
+  <!-- Siempre visible -->
+  <router-link @click="closeMenu" to="/inicioP" style="background-color: transparent;" >
+    Inicio
+  </router-link>
+
+  <!-- Si NO está logueado -->
+  <router-link 
+    v-if="!usuario"
+    @click="closeMenu" to="/login" style="background-color: transparent;" >
+    Login
+  </router-link>
+  <!-- <router-link 
+    v-if="!usuario"
+    @click="closeMenu" style="background-color: transparent;" >
+    
+  </router-link> -->
+  <a @click="closeMenu" href="/#"></a>
+
+  <!-- Usuario -->
+  <template v-if="usuario?.tipo === 'usuario'">
+    <router-link @click="closeMenu" to="/homeview" style="background-color: transparent;" >Home</router-link>
+    <router-link @click="closeMenu" to="/detalle-carwash" style="background-color: transparent;" >
+      Detalle Car Wash
+    </router-link>
+    <ProfileAvatar :usuario="usuario" style="background-color: transparent;" />
+    <a @click="closeMenu" href="/#"></a>
+  </template>
+
+  <!-- Carwash -->
+  <template v-if="usuario?.tipo === 'carwash'">
+    <router-link @click="closeMenu" to="/Dashboard_CarWash"  style="background-color: transparent;" >
+      Dashboard Car Wash
+    </router-link>
+  </template>
+
+</nav>
     </header>
 
     <router-view />
@@ -26,14 +58,28 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { RouterLink, RouterView } from "vue-router";
+import ProfileAvatar from "../src/components/ProfileAvatar.vue";
 
 const menuOpen = ref(false);
+const usuario = ref(null);
 
 const closeMenu = () => {
   menuOpen.value = false;
 };
+
+// Cargar usuario al iniciar app
+onMounted(() => {
+  const user = localStorage.getItem("usuario");
+  usuario.value = user ? JSON.parse(user) : null;
+});
+
+// 🔥 Escuchar cambios en otras páginas (login/logout)
+window.addEventListener("storage", () => {
+  const user = localStorage.getItem("usuario");
+  usuario.value = user ? JSON.parse(user) : null;
+});
 </script>
 
 <style scoped>
@@ -89,6 +135,13 @@ nav a {
   border: none;
   color: white;
   cursor: pointer;
+  z-index: 2;
+}
+
+.profile-avatar {
+  border: 2px solid #93c5fd;
+  box-shadow: 0 0 0 2px #1e3a8a;
+ 
 }
 
 /* ===== RESPONSIVE ===== */
