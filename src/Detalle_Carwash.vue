@@ -9,40 +9,50 @@
     <div class="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl px-8 py-8 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10">
 
       <!-- INFO -->
-      <div>
-        <h1 class="text-4xl lg:text-5xl font-extrabold text-slate-900 mb-4">
+      <div style="background-color: transparent;" >
+        <!-- <h1 class="text-4xl lg:text-5xl font-extrabold text-slate-900 mb-4">
           Brilliant Shine Auto Spa
-        </h1>
+        </h1> -->
+         <h1 v-if="carwash"  class="text-5xl lg:text-6xl font-black tracking-tight text-slate-900" style="background-color: transparent;">
+            {{ carwash.nombre_carwash }}
+         </h1>
+         
+         <p v-if="carwash" class="text-lg text-slate-500 mt-2" style="background-color: transparent;"> 
+            {{ carwash.descripcion }}
+         </p>
 
-        <p class="text-slate-500 mb-4">
-          Premium Car Wash & Auto Detailing
-        </p>
+         <div class="mt-4 space-y-2 text-slate-600 text-base" style="background-color: transparent;" >
+           <p v-if="carwash" class="text-slate-500 flex items-center gap-2" style="background-color: transparent;" >
+              📞 {{ carwash.telefono }}
+           </p>
 
-        <!-- <div class="flex items-center gap-3 text-sm mb-2">
-          <span class="text-yellow-400">★★★★★</span>
-          <span class="font-semibold text-slate-700">4.8</span>
-          <span class="text-slate-400">123 reseñas</span>
-        </div> -->
+           <p v-if="carwash" class="text-slate-500 flex items-center gap-2" style="background-color: transparent;" >
+              ✉️ {{ carwash.correo }}
+           </p>
+            
+         </div>
+        <!-- <p v-if="carwash" class="text-slate-500 flex items-center gap-2" >
+              📍 {{ carwash.direccion }}
+            </p> -->
+            <p class="text-slate-500 flex items-center gap-2" style="background-color: transparent;">
+             📍 {{ direccion.calle }}, {{ direccion.barrio }}, {{ direccion.ciudad }}
+            </p>
 
-        <p class="text-slate-500 flex items-center gap-2">
-          📍 123 Avenida Principal, Ciudad
-        </p>
 
-        <p class="text-emerald-500 font-medium mt-2">
-          ● Abierto ahora
+        <p class="font-medium mt-2":class="isOpen() ? 'text-emerald-500' : 'text-red-500'" style="background-color: transparent;">
+          ● {{ isOpen() ? "Abierto ahora" : "Cerrado" }}
         </p>
       </div>
 
       <!-- ACTIONS -->
-      <div class="flex gap-4">
-        <button
-          class="px-6 py-3 rounded-full font-semibold bg-white shadow-lg border hover:scale-105 transition"
-        >
-          🤍 Favorito
+      <div class="flex gap-4" style="background-color: transparent;" >
+        <button @click="toggleFavorito" class="px-6 py-3 rounded-full font-semibold shadow-lg border hover:scale-105 transition text-black" style="background-color: transparent;" >
+          {{ esFavorito ? "❤️ Favorito" : "🤍 Favorito" }}
         </button>
 
         <button
-          class="px-7 py-3 rounded-full font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-500 shadow-xl hover:scale-105 transition"
+          class="px-7 py-3 rounded-full font-semibold text-black bg-gradient-to-r from-blue-600 to-blue-500 shadow-xl hover:scale-105 transition"
+          style="background-color: transparent;"
         >
           💬 Contactar
         </button>
@@ -118,10 +128,10 @@
       <div class="space-y-8">
         <div class="bg-white rounded-2xl p-6 shadow">
           <h3 class="text-xl font-bold mb-3">Acerca de</h3>
-          <p class="text-slate-600 leading-relaxed">
-            Brilliant Shine Auto Spa ofrece servicios premium de lavado,
-            detallado y cuidado profesional para mantener tu vehículo impecable.
-          </p>
+          
+          <p v-if="carwash" class="text-slate-600 leading-relaxed"> 
+            {{ carwash.descripcion }}
+         </p>
         </div>
 
         <div class="bg-white rounded-2xl p-6 shadow">
@@ -176,7 +186,40 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { useRoute } from "vue-router";
+import { onMounted, ref } from "vue";
+import axios from "axios";
+
+const direccion = ref({
+  pais: "",
+  region: "",
+  provincia: "",
+  municipio: "",
+  ciudad: "",
+  barrio: "",
+  calle: ""
+});
+const route = useRoute();
+const carwash = ref(null);
+const esFavorito = ref(false);
+
+
+
+const toggleFavorito = () => {
+  const id = carwash.value.id_carwash;
+
+  let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
+
+  if (favoritos.includes(id)) {
+    favoritos = favoritos.filter(f => f !== id);
+    esFavorito.value = false;
+  } else {
+    favoritos.push(id);
+    esFavorito.value = true;
+  }
+
+  localStorage.setItem("favoritos", JSON.stringify(favoritos));
+};
 
 const images = [
   "https://images.unsplash.com/photo-1605559424843-9b8bcb64d409",
@@ -197,4 +240,48 @@ const prevImage = () => {
   activeImage.value =
     images[(i - 1 + images.length) % images.length];
 };
+
+const isOpen = () => {
+  const now = new Date();
+  const hour = now.getHours(); // 0 - 23
+
+  return hour >= 8 && hour < 19; // 8am a 7pm
+};
+
+// onMounted(async () => {
+//   try {
+//     const id = route.params.id;
+
+//     const res = await axios.get(`http://localhost:2629/carwash/${id}`);
+
+//     carwash.value = res.data;
+
+//   } catch (error) {
+//     console.error("Error cargando detalle:", error);
+//   }
+// });
+
+onMounted(async () => {
+  try {
+    const id = route.params.id;
+    const res = await axios.get(`http://localhost:2629/carwash/${id}`);
+const favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
+
+esFavorito.value = favoritos.includes(res.data.id_carwash);
+    carwash.value = res.data;
+
+    direccion.value = {
+      pais: res.data?.direccion?.calle?.barrio?.ciudad?.municipio?.provincia?.region?.pais?.nombre || "",
+      region: res.data?.direccion?.calle?.barrio?.ciudad?.municipio?.provincia?.region?.nombre || "",
+      provincia: res.data?.direccion?.calle?.barrio?.ciudad?.municipio?.provincia?.nombre || "",
+      municipio: res.data?.direccion?.calle?.barrio?.ciudad?.municipio?.nombre || "",
+      ciudad: res.data?.direccion?.calle?.barrio?.ciudad?.nombre || "",
+      barrio: res.data?.direccion?.calle?.barrio?.nombre || "",
+      calle: res.data?.direccion?.calle?.nombre || ""
+    };
+
+  } catch (error) {
+    console.error("Error cargando detalle:", error);
+  }
+});
 </script>

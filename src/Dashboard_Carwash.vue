@@ -104,20 +104,40 @@
         <p v-if="mensaje">{{ mensaje }}</p>
       </section>
 
-      <!-- GALERIA -->
       <section id="galeria" class="box">
-        <h2>Galería</h2>
+  <h2>Galería de Fotos</h2>
 
-        <div class="gallery">
-          <div v-for="(img, i) in galeria" :key="i" class="image">
-            <img :src="img.url" />
-            <button @click="eliminarImagen(i)">X</button>
-          </div>
-        </div>
+  <!-- IMAGEN PRINCIPAL -->
+  <div class="viewer" v-if="galeria.length">
+    <button class="nav prev" @click="prev" style="color: black;">‹</button>
 
-        <input type="file" multiple @change="agregarImagenes" />
-      </section>
+    <img 
+      :src="galeria[index].url" 
+      @click="abrirModal(galeria[index].url)"
+    />
 
+    <button class="nav next" @click="next" style="color: black;">›</button>
+  </div>
+
+  <!-- MINIATURAS -->
+  <div class="thumbs">
+    <img
+      v-for="(img, i) in galeria"
+      :key="i"
+      :src="img.url"
+      :class="{ active: index === i }"
+      @click="index = i"
+    />
+  </div>
+
+  <!-- MODAL -->
+  <div v-if="modal" class="modal" @click="modal = false">
+    <img :src="imagenActiva" />
+  </div>
+
+  <!-- INPUT -->
+  <input type="file" multiple @change="agregarImagenes" />
+</section>
     </main>
 
 
@@ -151,6 +171,9 @@ export default {
         location: true,
         darkMode: false
       },
+      index: 0,
+modal: false,
+imagenActiva: "",
 
       /* APP */
       active: "dashboard",
@@ -199,8 +222,7 @@ export default {
 
   await this.cargarDatos();
   this.cargarFotoPerfil();
-  this.cargarGaleriaLocal();
-  await this.cargarGaleria();
+  
     
   },
 
@@ -215,6 +237,19 @@ export default {
     /* ===============================
        🔹 UI
     =============================== */
+    next() {
+  this.index = (this.index + 1) % this.galeria.length;
+},
+
+prev() {
+  this.index =
+    (this.index - 1 + this.galeria.length) % this.galeria.length;
+},
+
+abrirModal(url) {
+  this.imagenActiva = url;
+  this.modal = true;
+},
     toggleSidebar() {
       this.sidebarOpen = !this.sidebarOpen;
     },
@@ -237,32 +272,32 @@ export default {
         );
 
         this.carwash = res.data || {};
-
-        if (this.carwash.DireccionCarwash) {
-          this.mapearDireccionDesdeBackend(this.carwash.DireccionCarwash);
-        }
+        this.galeria = this.carwash.imagenes || [];
+       if (this.carwash.direccion) {
+         this.mapearDireccionDesdeBackend(this.carwash.direccion);
+       }
 
         console.log(this.carwash);
       } catch (error) {
         console.error("Error cargando carwash:", error);
-      }
-    },
+    }
+  },
 
-    mapearDireccionDesdeBackend(direccion) {
-      if (!direccion || !direccion.Calle) return;
+  mapearDireccionDesdeBackend(direccion) {
+  if (!direccion || !direccion.calle) return;
 
-      this.carwash.id_direccion = direccion.id_direccion;
+  this.carwash.id_direccion = direccion.id_direccion;
 
-      this.direccion = {
-        pais: direccion.Calle.Barrio?.Ciudad?.Municipio?.Provincia?.Region?.Pais?.nombre || "",
-        region: direccion.Calle.Barrio?.Ciudad?.Municipio?.Provincia?.Region?.nombre || "",
-        provincia: direccion.Calle.Barrio?.Ciudad?.Municipio?.Provincia?.nombre || "",
-        municipio: direccion.Calle.Barrio?.Ciudad?.Municipio?.nombre || "",
-        ciudad: direccion.Calle.Barrio?.Ciudad?.nombre || "",
-        barrio: direccion.Calle.Barrio?.nombre || "",
-        calle: direccion.Calle?.nombre || ""
-      };
-    },
+  this.direccion = {
+    pais: direccion.calle.barrio?.ciudad?.municipio?.provincia?.region?.pais?.nombre || "",
+    region: direccion.calle.barrio?.ciudad?.municipio?.provincia?.region?.nombre || "",
+    provincia: direccion.calle.barrio?.ciudad?.municipio?.provincia?.nombre || "",
+    municipio: direccion.calle.barrio?.ciudad?.municipio?.nombre || "",
+    ciudad: direccion.calle.barrio?.ciudad?.nombre || "",
+    barrio: direccion.calle.barrio?.nombre || "",
+    calle: direccion.calle?.nombre || ""
+  };
+},
 
     async guardarCambios() {
       await axios.put(
@@ -325,19 +360,35 @@ export default {
 
     axios.post(
       `http://localhost:2629/galeria/${this.id_carwash}`,
-      formData
-    ).then(res => {
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      }
+    )
+    .then(res => { 
       this.galeria.push(res.data);
+    })
+    .catch(err => {
+      console.error("Error subiendo imagen:", err);
     });
   }
+
+  e.target.value = "";
 },
 
-    eliminarImagen(i) {
-  this.galeria.splice(i, 1);
-  localStorage.setItem(
-    `galeria_carwash_${this.id_carwash}`,
-    JSON.stringify(this.galeria)
-  );
+   async eliminarImagen(img) {
+  try {
+    await axios.delete(`http://localhost:2629/galeria/${img.id_imagen}`);
+
+    this.galeria = this.galeria.filter(
+      i => i.id_imagen !== img.id_imagen
+    );
+
+  } catch (error) {
+    console.error("Error eliminando imagen", error);
+  }
 },
     
 
@@ -590,7 +641,7 @@ export default {
 }
 
 /* ===== GALERIA ===== */
-.gallery {
+/* .gallery {
   display: flex;
   gap: 15px;
   flex-wrap: wrap;
@@ -601,6 +652,71 @@ export default {
   height: 100px;
   object-fit: cover;
   border-radius: 12px;
+} */
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+/* TARJETA */
+.card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+/* IMAGEN */
+.card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+/* OVERLAY (EFECTO BONITO) */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card:hover .overlay {
+  opacity: 1;
+}
+
+/* BOTÓN */
+.overlay button {
+  background: #ff4d4f;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 20px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* INPUT BONITO */
+.upload {
+  margin-top: 20px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px dashed #ccc;
+  width: 100%;
+  cursor: pointer;
 }
 
 /* ===== RESPONSIVE ===== */
@@ -695,5 +811,87 @@ export default {
   }
 }
 
+/* VISOR PRINCIPAL */
+.viewer {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
+}
+
+.viewer img {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 16px;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* BOTONES */
+.nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+  border: none;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.prev { left: -15px; }
+.next { right: -15px; }
+
+/* MINIATURAS */
+.thumbs {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.thumbs img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 10px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: 0.3s;
+}
+
+.thumbs img:hover {
+  opacity: 1;
+}
+
+.thumbs img.active {
+  border: 3px solid #145da0;
+  opacity: 1;
+}
+
+/* MODAL */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 16px;
+}
 
 </style>
