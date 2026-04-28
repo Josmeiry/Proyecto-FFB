@@ -32,6 +32,8 @@ const routes = [
   
    {path: '/inicioP', component: InicioPage },
    {path: '/detalle-carwash', component: Detalle_CarWash},
+
+   {path: '/carwash_d/:id',name: 'CarwashDetalle',component: Detalle_CarWash},
   {path: '/component', component: component},
   {path: '/configuracion', component: ConfiguracionPerfil},
   {path: '/copyright', name: 'copyright', component: Copyright},

@@ -35,7 +35,7 @@
 
   <!-- Usuario -->
   <template v-if="usuario?.tipo === 'usuario'">
-    <router-link @click="closeMenu" to="/homeview" style="background-color: transparent;" >Home</router-link>
+    <router-link @click="closeMenu" to="/homeview" style="background-color: transparent;" >Buscar</router-link>
     <router-link @click="closeMenu" to="/detalle-carwash" style="background-color: transparent;" >
       Detalle Car Wash
     </router-link>
