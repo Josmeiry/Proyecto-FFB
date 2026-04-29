@@ -97,7 +97,7 @@ export default {
     async obtenerUsuario() {
       try {
         const res = await axios.get(
-          `http://localhost:2629/usuarios/${this.id}`
+          `https://proyecto-bff.onrender.com/usuarios/${this.id}`
         );
 
         this.name = res.data.nombre;
@@ -112,7 +112,7 @@ export default {
     async guardarCambios() {
       try {
         await axios.put(
-          `http://localhost:2629/usuarios/${this.id}`,
+          `https://proyecto-bff.onrender.com/usuarios/${this.id}`,
           {
             nombre: this.name,
             correo: this.email,

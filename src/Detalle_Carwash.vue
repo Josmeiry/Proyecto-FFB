@@ -252,7 +252,7 @@ const isOpen = () => {
 //   try {
 //     const id = route.params.id;
 
-//     const res = await axios.get(`http://localhost:2629/carwash/${id}`);
+//     const res = await axios.get(`https://proyecto-bff.onrender.com/carwash/${id}`);
 
 //     carwash.value = res.data;
 
@@ -264,7 +264,7 @@ const isOpen = () => {
 onMounted(async () => {
   try {
     const id = route.params.id;
-    const res = await axios.get(`http://localhost:2629/carwash/${id}`);
+    const res = await axios.get(`https://proyecto-bff.onrender.com/carwash/${id}`);
 const favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
 
 esFavorito.value = favoritos.includes(res.data.id_carwash);

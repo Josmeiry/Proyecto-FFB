@@ -34,7 +34,7 @@ onMounted(async () => {
     const ids = [1, 2, 3,5 , 6 ,8, 9]; //  aquí podrías cargar dinámicamente los IDs disponibles
 
     const requests = ids.map(id =>
-      axios.get(`http://localhost:2629/carwash/${id}`)
+      axios.get(`https://proyecto-bff.onrender.com/carwash/${id}`)
     );
    
 

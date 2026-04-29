@@ -68,7 +68,7 @@
 
         <div class="profile">
           <img :src="profileImage || defaultImg" />
-          <input type="file" @change="changeProfile" />
+          <input type="file" multiple @change="agregarImagenes" />
         </div>
 
         <div class="form">
@@ -172,8 +172,8 @@ export default {
         darkMode: false
       },
       index: 0,
-modal: false,
-imagenActiva: "",
+      modal: false,
+      imagenActiva: "",
 
       /* APP */
       active: "dashboard",
@@ -201,16 +201,7 @@ imagenActiva: "",
   },
 
   async mounted() {
-    // this.id_carwash = localStorage.getItem("id_carwash");
-    // if (!this.id_carwash) {
-    //   this.$router.push("/login-carwash");
-    //   return;
-    // }
-
-    // await this.cargarDatos();
-    // this.cargarFotoPerfil();
-    // this.cargarGaleriaLocal();
-    // await this.cargarGaleria();
+    
     const usuario = JSON.parse(localStorage.getItem("usuario"));
 
   if (!usuario || usuario.tipo !== "carwash") {
@@ -268,7 +259,7 @@ abrirModal(url) {
     async cargarDatos() {
       try {
         const res = await axios.get(
-          `http://localhost:2629/carwash/${this.id_carwash}`
+          `https://proyecto-bff.onrender.com/carwash/${this.id_carwash}`
         );
 
         this.carwash = res.data || {};
@@ -301,7 +292,7 @@ abrirModal(url) {
 
     async guardarCambios() {
       await axios.put(
-        `http://localhost:2629/carwash/${this.id_carwash}`,
+        `https://proyecto-bff.onrender.com/carwash/${this.id_carwash}`,
         this.carwash
       );
       this.mensaje = "Datos actualizados ✔";
@@ -311,13 +302,13 @@ abrirModal(url) {
       try {
         if (this.carwash.id_direccion) {
           await axios.put(
-            `http://localhost:2629/direccion/${this.carwash.id_direccion}`,
+            `https://proyecto-bff.onrender.com/direccion/${this.carwash.id_direccion}`,
             { direccion: this.direccion }
           );
           this.mensaje = "Dirección actualizada ✔";
         } else {
           const res = await axios.post(
-            "http://localhost:2629/direccion",
+            "https://proyecto-bff.onrender.com/direccion",
             {
               id_carwash: this.id_carwash,
               direccion: this.direccion
@@ -359,7 +350,7 @@ abrirModal(url) {
     formData.append("imagen", file);
 
     axios.post(
-      `http://localhost:2629/galeria/${this.id_carwash}`,
+      `https://proyecto-bff.onrender.com/galeria/${this.id_carwash}`,
       formData,
       {
         headers: {
@@ -380,7 +371,7 @@ abrirModal(url) {
 
    async eliminarImagen(img) {
   try {
-    await axios.delete(`http://localhost:2629/galeria/${img.id_imagen}`);
+    await axios.delete(`https://proyecto-bff.onrender.com/galeria/${img.id_imagen}`);
 
     this.galeria = this.galeria.filter(
       i => i.id_imagen !== img.id_imagen
@@ -399,7 +390,7 @@ abrirModal(url) {
 
     async cargarGaleria() {
     const res = await axios.get(
-    `http://localhost:2629/galeria/${this.id_carwash}`
+    `https://proyecto-bff.onrender.com/galeria/${this.id_carwash}`
     );
     this.galeria = res.data;
    },
@@ -431,9 +422,6 @@ abrirModal(url) {
   }
 };
 </script>
-
-
-
 
 
 <style scoped>

@@ -11,7 +11,7 @@
         <!-- <div class="logo">MAJOAD</div> -->
 
         <!-- MENÚ -->
-        <ul :class="['nav-links', { active: menuOpen }]"  >
+        <ul :class="['nav-links', { active: menuOpen }]" style="background-color: transparent;" >
           <li style="background-color: transparent;" ><a href="#inicio" @click="closeMenu" style="background-color: transparent;" >Inicio</a></li>
           <li  style="background-color: transparent;" ><a href="#sobre-nosotros" @click="closeMenu" style="background-color: transparent;" >Sobre nosotros</a></li>
           <li style="background-color: transparent;" ><a href="#como-funciona" @click="closeMenu" style="background-color: transparent;" >Cómo funciona</a></li>
@@ -189,8 +189,16 @@
     <footer class="footer">
       <p style="background-color: transparent;" >© {{ new Date().getFullYear() }} MAJOAD</p>
       <div class="footer-links" style="background-color: transparent;" >
-        <a href="/copyright" style="background-color: transparent;"  target="_blank">Políticas de Privacidad</a> |
-        <a href="/terminos" style="background-color: transparent;"  target="_blank">Términos de Servicio</a>
+        <!-- <a href="/copyright" style="background-color: transparent;"  target="_blank">Políticas de Privacidad</a> |
+        <a href="/terminos" style="background-color: transparent;"  target="_blank">Términos de Servicio</a> -->
+
+        <router-link to="/copyright" target="_blank" style="background-color: transparent;" >
+          Políticas de Privacidad
+        </router-link> |
+
+        <router-link to="/terminos" target="_blank" style="background-color: transparent;" >
+          Términos de Servicio
+        </router-link>
       </div>
     </footer>
 

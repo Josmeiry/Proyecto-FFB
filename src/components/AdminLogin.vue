@@ -58,7 +58,7 @@ const contrasena = ref("");
 const mensaje = ref("");
 const autenticado = ref(false);
 
-const API_URL = "http://localhost:2629";
+const API_URL = "https://proyecto-bff.onrender.com";
 
 const emitClose = () => emit("close");
 

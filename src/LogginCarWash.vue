@@ -36,7 +36,7 @@ const correo = ref("");
 const contrasena = ref("");
 const mensaje = ref("");
 
-const API_URL = "http://localhost:2629";
+const API_URL = "https://proyecto-bff.onrender.com";
 
 const loginCarwash = async () => {
   try {

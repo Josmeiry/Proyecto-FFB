@@ -73,7 +73,7 @@ const toggleRegister = () => {
 const loginUser = async () => {
   try {
     const response = await axios.post(
-      "http://localhost:2629/login-usuario",
+      "https://proyecto-bff.onrender.com/login-usuario",
       {
         correo: loginCorreo.value,
         contrasena: loginContrasena.value,
@@ -102,7 +102,7 @@ const loginUser = async () => {
 
 // const loginUser = async () => {
 //   try {
-//     const response = await axios.post("http://localhost:2629/login-usuario", {
+//     const response = await axios.post("https://proyecto-bff.onrender.com/login-usuario", {
 //       correo: loginCorreo.value,
 //       contrasena: loginContrasena.value,
 //     });
@@ -129,7 +129,7 @@ const loginUser = async () => {
 // REGISTRO
 const registerUser = async () => {
   try {
-    const response = await axios.post("http://localhost:2629/registrar-usuario", {
+    const response = await axios.post("https://proyecto-bff.onrender.com/registrar-usuario", {
       nombre: registerNombre.value,
       correo: registerCorreo.value,
       contrasena: registerContrasena.value,

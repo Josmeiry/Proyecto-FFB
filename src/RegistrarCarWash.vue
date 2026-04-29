@@ -41,7 +41,7 @@ const telefono = ref("");
 const descripcion = ref("");
 const mensaje = ref("");
 
-const API_URL = "http://localhost:2629";
+const API_URL = "https://proyecto-bff.onrender.com";
 
 const crearCarWash = async () => {
   try {
