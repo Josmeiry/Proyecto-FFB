@@ -61,6 +61,7 @@
 import { ref, onMounted } from "vue";
 import { RouterLink, RouterView } from "vue-router";
 import ProfileAvatar from "../src/components/ProfileAvatar.vue";
+import axios from "axios";
 
 const menuOpen = ref(false);
 const usuario = ref(null);
