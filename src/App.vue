@@ -3,7 +3,7 @@
     <header class="header">
       <!-- LOGO -->
       <h2 class="logo">
-        <img src="/logo.png" id="img" alt="Logo MAJOAD" />
+        <img :src="logoApp || '/logo.png'" id="img" alt="Logo Majoad"/>
         MAJOAD
       </h2>
 
@@ -64,7 +64,7 @@ import ProfileAvatar from "../src/components/ProfileAvatar.vue";
 
 const menuOpen = ref(false);
 const usuario = ref(null);
-
+const logoApp = ref("");
 const closeMenu = () => {
   menuOpen.value = false;
 };
@@ -73,6 +73,33 @@ const closeMenu = () => {
 onMounted(() => {
   const user = localStorage.getItem("usuario");
   usuario.value = user ? JSON.parse(user) : null;
+});
+
+onMounted(async () => {
+  const user = localStorage.getItem("usuario");
+  usuario.value = user ? JSON.parse(user) : null;
+
+  try {
+    const res = await axios.get(
+      "https://proyecto-bff.onrender.com/media",
+      {
+        params: {
+          entidad_tipo: "app",
+          tipo: "logo"
+        }
+      }
+    );
+
+    if (res.data.length) {
+      logoApp.value = res.data[0].url.replace(
+        "http://localhost:2629",
+        "https://proyecto-bff.onrender.com"
+      );
+    }
+
+  } catch (error) {
+    console.error("Error cargando logo:", error);
+  }
 });
 
 // 🔥 Escuchar cambios en otras páginas (login/logout)

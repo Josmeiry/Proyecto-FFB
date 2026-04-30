@@ -7,6 +7,7 @@ import axios from "axios";
 const openModal = ref(false);
 const selectedVehicle = ref(null);
 const carWashList = ref([]);
+const videoApp = ref("");
 
 /* TIPOS DE VEHÍCULO */
 const vehicleTypes = [
@@ -56,6 +57,29 @@ onMounted(async () => {
   }
 });
 
+onMounted(async () => {
+  try {
+    const res = await axios.get(
+      "https://proyecto-bff.onrender.com/media",
+      {
+        params: {
+          entidad_tipo: "app",
+          tipo: "video"
+        }
+      }
+    );
+
+    if (res.data.length) {
+      videoApp.value = res.data[0].url.replace(
+        "http://localhost:2629",
+        "https://proyecto-bff.onrender.com"
+      );
+    }
+
+  } catch (error) {
+    console.error("Error cargando video:", error);
+  }
+});
 
 /* FILTRO MULTI-TIPO */
 const filteredCarWash = computed(() => {
@@ -351,7 +375,7 @@ function goToMaps(cw) {
     <!-- HERO -->
     <div class="hero">
       <video autoplay muted loop class="hero-video">
-        <source src="/hero-video.mp4" type="video/mp4" />
+        <source :src="videoApp || '/hero-video.mp4'" type="video/mp4" />
       </video>
 
       <div class="hero-overlay"></div>

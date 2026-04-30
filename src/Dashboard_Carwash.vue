@@ -387,7 +387,7 @@ abrirModal(url) {
 },
 
    async eliminarImagen(img) {
-  const id = img.id_imagen || img.id; // 👈 SOLUCIÓN
+  const id = img.id_imagen || img.id; 
 
   if (!id) {
     console.error("La imagen no tiene ID:", img);
