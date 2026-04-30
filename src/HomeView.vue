@@ -72,7 +72,9 @@ onMounted(async () => {
     if (res.data.length) {
       videoApp.value = res.data[0].url.replace(
         "http://localhost:2629",
-        "https://proyecto-bff.onrender.com"
+        "https://proyecto-bff.onrender.com",
+        "https://proyecto-raewc36y4-josmeiry-munoz-inoas-projects.vercel.app"
+
       );
     }
 
