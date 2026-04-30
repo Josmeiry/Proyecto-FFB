@@ -175,7 +175,7 @@ function goToMaps(cw) {
   width: 650px;
   padding: 40px;
   border-radius: 28px;
-  background: #1f7acb;
+  background: white;
   /* background: rgba(15, 23, 42, 0.9); */
   backdrop-filter: blur(25px);
 

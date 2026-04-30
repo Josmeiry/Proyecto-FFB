@@ -112,8 +112,8 @@
     <button class="nav prev" @click="prev" style="color: black;">‹</button>
 
     <img 
-      :src="galeria[index].url" 
-      @click="abrirModal(galeria[index].url)"
+      :src="getImageUrl(galeria[index].url)" 
+      @click="abrirModal(getImageUrl(galeria[index].url))"
     />
 
     <button class="nav next" @click="next" style="color: black;">›</button>
@@ -121,18 +121,27 @@
 
   <!-- MINIATURAS -->
   <div class="thumbs">
+  <div 
+    v-for="(img, i) in galeria" 
+    :key="i" 
+    class="thumb-wrapper"
+  >
     <img
-      v-for="(img, i) in galeria"
-      :key="i"
-      :src="img.url"
+      :src="getImageUrl(img.url)"
       :class="{ active: index === i }"
       @click="index = i"
     />
+
+    <!-- BOTÓN ELIMINAR -->
+    <button class="delete-btn" @click="eliminarImagen(img)">
+      ✕
+    </button>
   </div>
+</div>
 
   <!-- MODAL -->
   <div v-if="modal" class="modal" @click="modal = false">
-    <img :src="imagenActiva" />
+    <img :src="getImageUrl(imagenActiva)" />
   </div>
 
   <!-- INPUT -->
@@ -151,7 +160,6 @@
 <script>
 import axios from "axios";
 import ConfiguracionCW from "./components/ConfiguracionCW.vue";
-
 
 
 export default {
@@ -199,6 +207,7 @@ export default {
       galeria: []
     };
   },
+ 
 
   async mounted() {
     
@@ -228,6 +237,13 @@ export default {
     /* ===============================
        🔹 UI
     =============================== */
+    getImageUrl(url) {
+  if (!url) return "";
+  return url.replace(
+    "http://localhost:2629",
+    "https://proyecto-bff.onrender.com"
+  );
+},
     next() {
   this.index = (this.index + 1) % this.galeria.length;
 },
@@ -238,7 +254,7 @@ prev() {
 },
 
 abrirModal(url) {
-  this.imagenActiva = url;
+  this.imagenActiva = this.getImageUrl(url);
   this.modal = true;
 },
     toggleSidebar() {
@@ -328,6 +344,7 @@ abrirModal(url) {
     /* ===============================
        🔹 PERFIL / GALERÍA
     =============================== */
+    
     changeProfile(e) {
       const r = new FileReader();
       r.onload = ev => {
@@ -370,11 +387,22 @@ abrirModal(url) {
 },
 
    async eliminarImagen(img) {
+  const id = img.id_imagen || img.id; // 👈 SOLUCIÓN
+
+  if (!id) {
+    console.error("La imagen no tiene ID:", img);
+    return;
+  }
+
+  if (!confirm("¿Eliminar esta imagen?")) return;
+
   try {
-    await axios.delete(`https://proyecto-bff.onrender.com/galeria/${img.id_imagen}`);
+    await axios.delete(
+      `https://proyecto-bff.onrender.com/galeria/${id}`
+    );
 
     this.galeria = this.galeria.filter(
-      i => i.id_imagen !== img.id_imagen
+      i => (i.id_imagen || i.id) !== id
     );
 
   } catch (error) {
@@ -629,18 +657,23 @@ abrirModal(url) {
 }
 
 /* ===== GALERIA ===== */
-/* .gallery {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
+.thumb-wrapper {
+  position: relative;
 }
 
-.gallery img {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 12px;
-} */
+.delete-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  font-size: 12px;
+}
 
 .gallery {
   display: grid;
