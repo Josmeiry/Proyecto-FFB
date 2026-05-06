@@ -5,7 +5,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  background-color: white;
 }
 /*
 :root {
@@ -150,7 +149,7 @@ h1 + p {
 
 header {
   position: relative;
-  height: 70px; 
+  min-height: 70px; 
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -245,13 +244,7 @@ nav a {
   box-shadow: 0 0 8px rgba(0,0,0,0.1);
 }
 
-footer {
-  display: flex;
-  justify-content: space-around;
-  padding: 20px;
-  background: #f1f1f1;
-  border-top: 1px solid #ccc;
-}
+/* footer global styles moved to scoped components */
 
 
 
@@ -307,18 +300,7 @@ body {
 
 
 
-/* Footer */
-footer {
-  background-color: var(--background);
-  border-top: 1px solid var(--border);
-  text-align: center;
-  padding: 16px;
-
-  small {
-    color: var(--text-muted);
-    font-size: 0.875rem;
-  }
-}
+/* Footer styles handled by scoped components */
 
 
 /*  RESPONSIVE DESIGN MEJORADO para cel y pc */
