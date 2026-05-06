@@ -1,10 +1,11 @@
 <template>
   <div class="profile-container">
     <img
-      :src="avatar"
+      src="/public/image.png"
       class="profile-avatar"
       @click="toggleMenu"
     />
+  
 
     <div v-if="open" class="profile-menu">
       <div @click="goConfig">⚙️ Configuración</div>

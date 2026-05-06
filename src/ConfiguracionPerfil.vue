@@ -40,11 +40,11 @@
         <div class="profile-card-premium">
           <div class="profile-header-section">
             <div class="avatar-wrapper">
-              <img :src="avatar" class="profile-avatar" alt="User Avatar" />
-              <label class="camera-btn">
+              <img src="/public/image.png" class="profile-avatar" alt="User Avatar" />
+              <!-- <label class="camera-btn">
                 <CameraIcon :size="18" />
                 <input type="file" hidden @change="changeAvatar" />
-              </label>
+              </label> -->
             </div>
             <div class="profile-intro">
               <h2>{{ name }}</h2>
@@ -119,9 +119,7 @@ export default {
   data() {
     return {
       id: null,
-      avatar:
-        localStorage.getItem("user_avatar") ||
-        "https://i.pravatar.cc/150?img=32",
+      
       name: "",
       email: "",
       contrasena: ""
