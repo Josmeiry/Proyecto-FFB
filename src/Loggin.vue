@@ -72,7 +72,6 @@
           ¿Ya tienes cuenta? <span @click="toggleRegister">Inicia sesión</span>
         </p>
       </form>
-
       <button class="btn-admin-outline" @click="irAdmin">
         <ShieldCheck :size="20" />
         Acceso para administradores
