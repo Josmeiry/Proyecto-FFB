@@ -33,13 +33,13 @@
       <form v-if="!mostrarRegistro" @submit.prevent="loginUser" class="login-form">
         <div class="input-group">
           <Mail class="input-icon" :size="20" />
-          <input type="email" v-model="loginCorreo" placeholder="Correo" required />
+          <input type="email" v-model="loginCorreo" placeholder="Correo" required data-cy="email-login"/>
         </div>
         <div class="input-group">
           <Lock class="input-icon" :size="20" />
-          <input type="password" v-model="loginContrasena" placeholder="Contraseña" required />
+          <input type="password" v-model="loginContrasena" placeholder="Contraseña" required data-cy="pass-login"/>
         </div>
-        <button type="submit" class="btn-primary" :disabled="cargando">
+        <button type="submit" class="btn-primary" :disabled="cargando" data-cy="btn-login"> >
           {{ cargando ? 'Accediendo...' : 'Entrar' }}
         </button>
         <p class="toggle-text">
