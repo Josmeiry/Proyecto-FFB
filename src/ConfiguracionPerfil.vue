@@ -16,7 +16,7 @@
           <div class="nav-item active">
             <UserIcon :size="20" /> <span>Perfil</span>
           </div>
-          <div class="nav-item">
+          <!-- <div class="nav-item">
             <Bell :size="20" /> <span>Notificaciones</span>
           </div>
           <div class="nav-item">
@@ -24,7 +24,7 @@
           </div>
           <div class="nav-item">
             <Lock :size="20" /> <span>Privacidad</span>
-          </div>
+          </div> -->
         </nav>
         
         <div class="sidebar-footer">
@@ -136,7 +136,7 @@ export default {
     }
 
     if (usuarioGuardado.tipo !== "usuario") {
-      this.$router.push("/dashboard-carwash");
+      this.$router.push("/Dashboard_CarWash");
       return;
     }
 

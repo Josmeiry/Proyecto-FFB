@@ -19,7 +19,8 @@
 
       <div class="sidebar-user">
         <div class="avatar-wrapper">
-          <img :src="profileImage || defaultImg" alt="Avatar" class="avatar" />
+          <img src="https://res.cloudinary.com/dhtdpmh6t/image/upload/v1778168725/majoapp/knoll0eb070bgarmkhsg.png" alt="Avatar" class="avatar" />
+          <!-- <img :src="profileImage || defaultImg" alt="Avatar" class="avatar" /> -->
           <div class="online-indicator"></div>
         </div>
         <div class="user-info">
@@ -156,7 +157,9 @@
           <div class="profile-layout">
             <div class="profile-image-section">
               <div class="image-preview">
-                <img :src="profileImage || defaultImg" alt="Profile" />
+                <img src="https://res.cloudinary.com/dhtdpmh6t/image/upload/v1778168725/majoapp/knoll0eb070bgarmkhsg.png"  />
+
+                <!-- <img :src="profileImage || defaultImg" alt="Profile" /> -->
                 <label class="upload-overlay">
                   <Camera :size="24" />
                   <input type="file" @change="changeProfile" hidden />
@@ -354,6 +357,20 @@ const carwash = ref({ id_direccion: null, nombre_carwash: "", correo: "", telefo
 const direccion = ref({ pais: "", region: "", provincia: "", municipio: "", ciudad: "", barrio: "", calle: "" });
 const galeria = ref([]);
 
+onMounted(async () => {
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+
+  if (!usuario || usuario.tipo !== "carwash") {
+    router.push("/login");
+    return;
+  }
+
+  id_carwash.value = usuario.id_carwash;
+
+  await cargarDatos();
+  cargarFotoPerfil();
+});
+
 // Methods
 const getImageUrl = (url) => {
   if (!url) return "";
@@ -378,7 +395,15 @@ const goTo = (section) => {
 const cargarDatos = async () => {
   try {
     const res = await axios.get(`https://proyecto-bff.onrender.com/carwash/${id_carwash.value}`);
-    carwash.value = res.data || {};
+    carwash.value = {
+     id_direccion: null,
+     nombre_carwash: "",
+     correo: "",
+     telefono: "",
+     horario: "",
+     descripcion: "",
+     ...res.data
+    };
     galeria.value = carwash.value.imagenes || [];
     if (carwash.value.direccion) mapearDireccion(carwash.value.direccion);
   } catch (err) {
@@ -436,6 +461,13 @@ const changeProfile = (e) => {
   reader.readAsDataURL(file);
 };
 
+const cargarFotoPerfil = () => {
+  const img = localStorage.getItem("profileImage");
+  if (img) {
+    profileImage.value = img;
+  }
+};
+
 const agregarImagenes = async (e) => {
   const files = e.target.files;
   for (const file of files) {
@@ -472,14 +504,15 @@ const showToast = (msg) => {
 
 const goPublicProfile = () => router.push(`/detalle-carwash`);
 const logout = () => {
-  localStorage.clear();
+  localStorage.removeItem("usuario");
+  localStorage.removeItem("user_avatar");
+  localStorage.removeItem("id_carwash");
+
   window.dispatchEvent(new Event("storage"));
 
-  // 3️⃣ Redirigir correctamente
-  this.$router.push("/inicioP");
-}
-  }
+  router.push("/inicioP");
 };
+  
 </script>
 
 <style scoped>

@@ -21,7 +21,7 @@
 
       <div class="tech-shape ts1"></div>
       <div class="tech-shape ts2"></div>
-      <img src="/public/blue-car-nobg-Photoroom.png" alt="Car" class="floating-car" />
+      
     </div>
 
     <div class="login-card">
@@ -75,7 +75,10 @@
       <button class="btn-admin-outline" @click="irCarWash">  
         <Car :size="20" /> Acceso para Car Wash
       </button>
-
+      <button class="btn-admin-outline" @click="loginGoogle">
+            <img style="width: 20px; height: 20px;" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google" class="google-icon"/>
+              
+          </button>
       <router-link to="/" class="btn-back">
         <ArrowLeft :size="16" /> Volver al Inicio
       </router-link>
@@ -86,7 +89,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 import { Mail, Lock, User, ShieldCheck, ArrowLeft, Car } from 'lucide-vue-next';
@@ -101,8 +104,37 @@ const registerContrasena = ref("");
 const mostrarRegistro = ref(false);
 const mensaje = ref("");
 const isError = ref(false);
+const usuario = ref(null);
 
 const MAKE_WEBHOOK_URL = "https://hook.eu1.make.com/whj52np6oxjqdvhmmllrcptxvxneskco";
+
+
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "./firebase";
+
+
+const loginGoogle = async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+
+    const user = {
+      nombre: result.user.displayName,
+      email: result.user.email,
+      foto: result.user.photoURL,
+      tipo: "usuario"
+    };
+
+    localStorage.setItem("usuario", JSON.stringify(user));
+
+    window.dispatchEvent(new Event("usuarioActualizado"));
+
+    router.push("/homeview");
+
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 
 const toggleRegister = () => {
   mostrarRegistro.value = !mostrarRegistro.value;
@@ -174,6 +206,22 @@ const registerUser = async () => {
 
 const irAdmin = () => router.push("/login-admin");
 const irCarWash = () => router.push("/login-carwash");
+
+const loadUser = () => {
+  const user = localStorage.getItem("usuario");
+  usuario.value = user ? JSON.parse(user) : null;
+};
+
+// 🔥 Escuchar cambios en otras páginas (login/logout)
+window.addEventListener("usuarioActualizado", () => {
+  loadUser();
+});
+
+onMounted(() => {
+  loadUser();
+});
+
+window.dispatchEvent(new Event("usuarioActualizado"));
 </script>
 
 <style scoped>
