@@ -99,6 +99,7 @@ const openWhatsApp = () => {
   );
 };
 
+// telefono del carwash
 const callPhone = () => {
   if (!carwash.value?.telefono) {
     alert("Este car wash no tiene teléfono");
@@ -109,6 +110,10 @@ const callPhone = () => {
 
   window.location.href = `tel:${telefono}`;
 };
+onMounted(() => {
+  fetch(`/carwash/${id}/view`, { method: "POST" });
+});
+
 
 onMounted(async () => {
   try {

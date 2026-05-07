@@ -21,12 +21,12 @@
 
       <div class="tech-shape ts1"></div>
       <div class="tech-shape ts2"></div>
-      <img src="/public/blue-car-nobg-Photoroom.png" alt="Car" class="floating-car" />
+      <img src="https://res.cloudinary.com/dhtdpmh6t/image/upload/v1778131036/majoapp/pgal2eeswx1odylprlaf.png" alt="Car" class="floating-car" />
     </div>
 
     <div class="login-card">
       <div class="logo-container">
-        <img src="/logo.png" alt="MAJOAD Logo" class="login-logo" />
+        <img src="https://res.cloudinary.com/dhtdpmh6t/image/upload/v1778131006/majoapp/f8bqezuuplw33cagweq2.png" alt="MAJOAD Logo" class="login-logo" />
       </div>
 
       <h2 class="login-title">{{ mostrarRegistro ? 'Crea tu Cuenta' : 'Iniciar Sesión' }}</h2>

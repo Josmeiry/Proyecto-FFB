@@ -5,7 +5,7 @@
       <nav class="navbar">
         <router-link to="/" class="nav-brand">
           <div class="brand-logo-img">
-            <img src="/logo.png" alt="Logo" class="main-logo-graphic" onerror="this.style.display='none'" />
+            <img src="https://res.cloudinary.com/dhtdpmh6t/image/upload/v1778131006/majoapp/f8bqezuuplw33cagweq2.png" alt="Logo" class="main-logo-graphic" onerror="this.style.display='none'" />
             <Droplets v-if="!logoExists" :size="24" color="#0066ff" />
           </div>
           <div class="brand-text">

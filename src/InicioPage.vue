@@ -12,7 +12,7 @@
       <nav class="navbar">
         <div class="nav-brand" @click="router.push('/')">
           <div class="brand-logo-img">
-            <img src="/logo.png" alt="Logo" class="main-logo-graphic" />
+            <img src="https://res.cloudinary.com/dhtdpmh6t/image/upload/v1778131006/majoapp/f8bqezuuplw33cagweq2.png" alt="Logo" class="main-logo-graphic" />
           </div>
           <div class="brand-text">
             <strong class="brand-name">MAJOAD</strong>
@@ -72,7 +72,7 @@
         </div>
         <div class="hero-image-box">
           <div class="hero-image-backdrop"></div>
-          <img src="/blue-car-nobg-Photoroom.png" alt="Car Wash Premium" class="hero-img" />
+          <img src="https://res.cloudinary.com/dhtdpmh6t/image/upload/v1778131036/majoapp/pgal2eeswx1odylprlaf.png" alt="Car Wash Premium" class="hero-img" />
         </div>
       </div>
     </section>

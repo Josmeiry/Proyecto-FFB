@@ -17,7 +17,7 @@ import {
 const openModal = ref(false);
 const selectedVehicle = ref(null);
 const carWashList = ref([]);
-const videoApp = ref("");
+const videoApp = ref("https://res.cloudinary.com/dhtdpmh6t/video/upload/v1778131397/majoapp/vpqdahjtrnjdcrzyufkz.mp4");
 const showHeroText = ref(true);
 
 /* TIPOS DE VEHÍCULO */
@@ -73,12 +73,15 @@ onMounted(async () => {
       }
     );
 
+    // if (res.data.length) {
+    //   videoApp.value = res.data[0].url.replace(
+    //     "http://localhost:2629",
+    //     "https://proyecto-bff.onrender.com",
+    //     "https://proyecto-raewc36y4-josmeiry-munoz-inoas-projects.vercel.app"
+    //   );
+    // }
     if (res.data.length) {
-      videoApp.value = res.data[0].url.replace(
-        "http://localhost:2629",
-        "https://proyecto-bff.onrender.com",
-        "https://proyecto-raewc36y4-josmeiry-munoz-inoas-projects.vercel.app"
-      );
+     videoApp.value = res.data[0].url;
     }
 
   } catch (error) {

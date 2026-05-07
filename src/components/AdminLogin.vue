@@ -33,7 +33,7 @@
 
     <div class="login-card">
       <div class="logo-container">
-        <img src="/logo.png" alt="MAJOAD Logo" class="login-logo" />
+        <img src="https://res.cloudinary.com/dhtdpmh6t/image/upload/v1778131006/majoapp/f8bqezuuplw33cagweq2.png" alt="MAJOAD Logo" class="login-logo" />
       </div>
 
       <h2 class="login-title">Acceso <span class="text-accent">Admin</span></h2>
