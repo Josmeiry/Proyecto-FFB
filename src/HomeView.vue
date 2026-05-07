@@ -41,7 +41,7 @@ const tiposPorCarwash = {
 /* CARGAR DESDE BACKEND */
 onMounted(async () => {
   try {
-    const ids = [1, 2, 3,5 , 6 ,8, 9]; 
+    const ids = [1, 2, 3,5 , 6 ,8,10]; 
     const requests = ids.map(id =>
       axios.get(`https://proyecto-bff.onrender.com/carwash/${id}`)
     );
