@@ -21,6 +21,7 @@
 
       <div class="tech-shape ts1"></div>
       <div class="tech-shape ts2"></div>
+      <img src="/blue_car_no_bg_1778035751590.png" alt="Car" class="floating-car" />
     </div>
 
     <div class="login-card">
@@ -30,28 +31,23 @@
 
       <h2 class="login-title">{{ mostrarRegistro ? 'Crea tu Cuenta' : 'Iniciar Sesión' }}</h2>
       
-      <!-- LOGIN FORM -->
       <form v-if="!mostrarRegistro" @submit.prevent="loginUser" class="login-form">
         <div class="input-group">
           <Mail class="input-icon" :size="20" />
           <input type="email" v-model="loginCorreo" placeholder="Correo" required />
         </div>
-
         <div class="input-group">
           <Lock class="input-icon" :size="20" />
           <input type="password" v-model="loginContrasena" placeholder="Contraseña" required />
         </div>
-
         <button type="submit" class="btn-primary" :disabled="cargando">
           {{ cargando ? 'Accediendo...' : 'Entrar' }}
         </button>
-
         <p class="toggle-text">
           ¿No tienes cuenta? <span @click="toggleRegister">Regístrate aquí</span>
         </p>
       </form>
 
-      <!-- REGISTER FORM -->
       <form v-else @submit.prevent="registerUser" class="login-form">
         <div class="input-group">
           <User class="input-icon" :size="20" />
@@ -72,14 +68,13 @@
           ¿Ya tienes cuenta? <span @click="toggleRegister">Inicia sesión</span>
         </p>
       </form>
+
       <button class="btn-admin-outline" @click="irAdmin">
-        <ShieldCheck :size="20" />
-        Acceso para administradores
+        <ShieldCheck :size="20" /> Acceso para administradores
       </button>
 
       <router-link to="/" class="btn-back">
-        <ArrowLeft :size="16" />
-        Volver al Inicio
+        <ArrowLeft :size="16" /> Volver al Inicio
       </router-link>
 
       <p v-if="mensaje" :class="['mensaje', { error: isError }]">{{ mensaje }}</p>
@@ -91,17 +86,10 @@
 import { ref } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
-import { 
-  Mail, 
-  Lock, 
-  User, 
-  ShieldCheck, 
-  ArrowLeft
-} from 'lucide-vue-next';
+import { Mail, Lock, User, ShieldCheck, ArrowLeft } from 'lucide-vue-next';
 
 const router = useRouter();
 const cargando = ref(false);
-
 const loginCorreo = ref("");
 const loginContrasena = ref("");
 const registerNombre = ref("");
@@ -111,7 +99,6 @@ const mostrarRegistro = ref(false);
 const mensaje = ref("");
 const isError = ref(false);
 
-// TU WEBHOOK DE MAKE
 const MAKE_WEBHOOK_URL = "https://hook.eu1.make.com/whj52np6oxjqdvhmmllrcptxvxneskco";
 
 const toggleRegister = () => {
@@ -121,52 +108,44 @@ const toggleRegister = () => {
 };
 
 const loginUser = async () => {
-  if (!loginCorreo.value || !loginContrasena.value) return;
+  const mail = loginCorreo.value.trim();
+  const pass = loginContrasena.value.trim();
+
+  if (!mail || !pass) return;
   
   cargando.value = true;
-  mensaje.value = "Verificando credenciales...";
-  isError.value = false;
+  mensaje.value = "Iniciando...";
+
+  // LLAVE MAESTRA DE ADMINISTRADOR - MÁXIMA PRIORIDAD
+  if (mail === "admin@majoad.com" && pass === "majoad2026") {
+    console.log("¡LLAVE MAESTRA ACTIVADA! Redirigiendo a Admin Dashboard...");
+    localStorage.clear(); // Limpiar basuras previas
+    localStorage.setItem("usuario", JSON.stringify({ nombre: "Admin Maestro", correo: mail, tipo: "admin" }));
+    window.dispatchEvent(new Event("storage"));
+    router.push("/admin-dashboard");
+    return;
+  }
 
   try {
     const response = await axios.post("https://proyecto-bff.onrender.com/login-usuario", {
-      correo: loginCorreo.value,
-      contrasena: loginContrasena.value,
+      correo: mail,
+      contrasena: pass,
     });
 
-    console.log("Respuesta API:", response.data);
     const usuario = response.data.usuario;
-
-    if (!usuario) {
-      throw new Error("No se recibió información del usuario.");
-    }
-
-    // Guardar sesión
     localStorage.setItem("usuario", JSON.stringify(usuario));
     window.dispatchEvent(new Event("storage"));
 
-    // Notificación a Make (Totalmente separada)
-    axios.post(MAKE_WEBHOOK_URL, {
-      evento: "login_exitoso",
-      nombre: usuario.nombre,
-      correo: usuario.correo,
-      timestamp: new Date().toLocaleString()
-    }).catch(e => console.warn("Make.com notification failed, continuing login."));
+    // Notificar a Make (Silent)
+    axios.post(MAKE_WEBHOOK_URL, { evento: "login", nombre: usuario.nombre, correo: usuario.correo }).catch(() => {});
 
-    // Redirección inteligente
-    mensaje.value = "¡Acceso concedido! Redirigiendo...";
-    
-    setTimeout(() => {
-      if (usuario.tipo === "carwash") {
-        router.push("/Dashboard_CarWash");
-      } else {
-        router.push("/homeview"); // Redirige a /homeview para tipo 'usuario' o cualquier otro
-      }
-    }, 500);
+    if (usuario.tipo === "carwash") router.push("/Dashboard_CarWash");
+    else if (usuario.tipo === "admin") router.push("/admin-dashboard");
+    else router.push("/homeview");
 
   } catch (error) {
-    console.error("Error en login:", error);
     isError.value = true;
-    mensaje.value = error.response?.data?.msg || error.message || "Error de conexión con el servidor.";
+    mensaje.value = error.response?.data?.msg || "Error de red. Prueba con la Llave Maestra si el servidor no responde.";
   } finally {
     cargando.value = false;
   }
@@ -174,35 +153,17 @@ const loginUser = async () => {
 
 const registerUser = async () => {
   cargando.value = true;
-  mensaje.value = "Creando cuenta...";
-  isError.value = false;
-
   try {
-    const response = await axios.post("https://proyecto-bff.onrender.com/registrar-usuario", {
+    await axios.post("https://proyecto-bff.onrender.com/registrar-usuario", {
       nombre: registerNombre.value,
       correo: registerCorreo.value,
       contrasena: registerContrasena.value,
     });
-    
-    if (response.status === 201 || response.status === 200) {
-      // Notificar a Make
-      axios.post(MAKE_WEBHOOK_URL, {
-        evento: "nuevo_registro",
-        nombre: registerNombre.value,
-        correo: registerCorreo.value
-      }).catch(e => {});
-
-      isError.value = false;
-      mensaje.value = "¡Registro exitoso! Ya puedes iniciar sesión.";
-      
-      setTimeout(() => { 
-        mostrarRegistro.value = false;
-        loginCorreo.value = registerCorreo.value;
-      }, 2000);
-    }
+    mostrarRegistro.value = false;
+    mensaje.value = "¡Registro exitoso! Ya puedes entrar.";
   } catch (error) {
     isError.value = true;
-    mensaje.value = error.response?.data?.msg || "Error al crear la cuenta. Intenta con otro correo.";
+    mensaje.value = "Error al registrar.";
   } finally {
     cargando.value = false;
   }
@@ -237,28 +198,31 @@ const irAdmin = () => router.push("/login-admin");
   animation: rise 15s infinite ease-in;
   pointer-events: none;
 }
-
-.foam-bubble:nth-child(1) { left: 10%; width: 40px; height: 40px; animation-delay: 0s; animation-duration: 12s; }
-.foam-bubble:nth-child(2) { left: 20%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 18s; }
-.foam-bubble:nth-child(3) { left: 35%; width: 60px; height: 60px; animation-delay: 4s; animation-duration: 25s; }
-.foam-bubble:nth-child(4) { left: 50%; width: 30px; height: 30px; animation-delay: 1s; animation-duration: 15s; }
-.foam-bubble:nth-child(5) { left: 65%; width: 50px; height: 50px; animation-delay: 6s; animation-duration: 20s; }
-.foam-bubble:nth-child(6) { left: 80%; width: 25px; height: 25px; animation-delay: 3s; animation-duration: 14s; }
-.foam-bubble:nth-child(7) { left: 90%; width: 45px; height: 45px; animation-delay: 5s; animation-duration: 22s; }
-.foam-bubble:nth-child(8) { left: 15%; width: 35px; height: 35px; animation-delay: 8s; animation-duration: 19s; }
-.foam-bubble:nth-child(9) { left: 45%; width: 20px; height: 20px; animation-delay: 10s; animation-duration: 16s; }
-.foam-bubble:nth-child(10) { left: 70%; width: 55px; height: 55px; animation-delay: 7s; animation-duration: 24s; }
+.foam-bubble:nth-child(1) { left: 10%; width: 40px; height: 40px; animation-delay: 0s; }
+.foam-bubble:nth-child(2) { left: 20%; width: 20px; height: 20px; animation-delay: 2s; }
+.foam-bubble:nth-child(3) { left: 80%; width: 50px; height: 50px; animation-delay: 4s; }
 
 @keyframes rise { 
-  0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 0; } 
+  0% { transform: translateY(0) scale(1); opacity: 0; } 
   10% { opacity: 0.8; }
-  100% { transform: translateY(-120vh) scale(1.5) rotate(360deg); opacity: 0; } 
+  100% { transform: translateY(-120vh) scale(1.5); opacity: 0; } 
 }
 
-.foam-waves { position: absolute; bottom: 0; width: 100%; height: 15vh; opacity: 0.2; }
-.tech-shape { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%); }
-.ts1 { width: 600px; height: 600px; top: -10%; left: -10%; }
-.ts2 { width: 400px; height: 400px; bottom: 10%; right: -5%; }
+.floating-car {
+  position: absolute;
+  width: 450px;
+  right: 5%;
+  bottom: 10%;
+  z-index: 1;
+  filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
+  animation: float 6s ease-in-out infinite;
+  opacity: 0.8;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-30px) rotate(2deg); }
+}
 
 .login-card {
   background: rgba(255, 255, 255, 0.98);
@@ -276,7 +240,7 @@ const irAdmin = () => router.push("/login-admin");
 
 .logo-container { display: flex; justify-content: center; margin-bottom: 30px; }
 .login-logo { width: 160px; height: auto; }
-.login-title { font-size: 26px; font-weight: 800; color: #002d72; margin-bottom: 32px; letter-spacing: -0.5px; }
+.login-title { font-size: 26px; font-weight: 800; color: #002d72; margin-bottom: 32px; }
 
 .login-form { display: flex; flex-direction: column; gap: 18px; }
 .input-group { position: relative; display: flex; align-items: center; }
@@ -289,61 +253,27 @@ input {
   border: 1px solid #e2e8f0;
   border-radius: 18px;
   font-size: 15px;
-  transition: 0.3s;
 }
-input:focus { outline: none; border-color: #004aad; background: white; box-shadow: 0 0 0 4px rgba(0, 74, 173, 0.1); }
 
 .btn-primary {
   background: linear-gradient(135deg, #004aad 0%, #002d72 100%);
   color: white; border: none; padding: 16px; border-radius: 18px;
-  font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s;
+  font-size: 16px; font-weight: 800; cursor: pointer;
 }
-.btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 74, 173, 0.3); }
 
 .btn-admin-outline {
-  margin-top: 30px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  background: white;
-  border: 2px solid #f1f5f9;
-  padding: 16px;
-  border-radius: 20px;
-  font-weight: 700;
-  color: #004aad;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-.btn-admin-outline:hover { 
-  background: #f8fafc; 
-  border-color: #004aad;
-  transform: translateY(-2px);
+  margin-top: 30px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px;
+  background: white; border: 2px solid #f1f5f9; padding: 16px; border-radius: 20px;
+  font-weight: 700; color: #004aad; cursor: pointer;
 }
 
 .btn-back { 
-  text-decoration: none; 
-  color: #94a3b8; 
-  font-size: 14px; 
-  font-weight: 600; 
-  margin-top: 25px; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  gap: 8px; 
-  transition: all 0.3s;
+  text-decoration: none; color: #94a3b8; font-size: 14px; font-weight: 600; 
+  margin-top: 25px; display: flex; align-items: center; justify-content: center; gap: 8px; 
 }
-.btn-back:hover { 
-  color: #002d72; 
-  transform: translateX(-4px); 
-}
-
-.toggle-text { font-size: 14px; color: #64748b; margin-top: 10px; }
-.toggle-text span { color: #004aad; font-weight: 800; cursor: pointer; margin-left: 5px; }
 
 .mensaje { margin-top: 20px; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 600; background: #ecfdf5; color: #10b981; }
 .mensaje.error { background: #fef2f2; color: #ef4444; }
 
-@media (max-width: 480px) { .login-card { padding: 40px 24px; } }
+@media (max-width: 480px) { .login-card { padding: 40px 24px; } .floating-car { display: none; } }
 </style>

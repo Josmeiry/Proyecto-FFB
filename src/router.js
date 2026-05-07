@@ -16,12 +16,14 @@ import Copyright from './Views/Copyright.vue'
 import Terminos from './Views/Terminos.vue'
 
 
+import AdminDashboard from './Views/AdminDashboard.vue'
 
 const routes = [
   { path: '/', component: InicioPage },
   { path: '/login', component: Loggin },
   /*{path: '/AdminLogin', component: AdminLogin },*/
   {path: '/login-admin', component: LoginAdmin},
+  {path: '/admin-dashboard', component: AdminDashboard},
   {path: '/login-carwash', component: LogginCarWash},
   { path: '/registrar-carwash', component: RegistrarCarWash },
   {path: '/RegistrarCarWash', component: RegistrarCarWash },

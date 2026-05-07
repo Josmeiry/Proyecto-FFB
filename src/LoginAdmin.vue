@@ -1,7 +1,7 @@
 <template>
   <AdminLogin 
     @close="emitClose"
-    @success="goToCarWash" 
+    @success="goToAdminDashboard" 
   />
 </template>
 
@@ -15,7 +15,7 @@ const closeModal = () => {
   router.back();   // Vuelve a la pantalla anterior
 };
 
-const goToCarWash = () => {
-  router.push("/login-carwash");
+const goToAdminDashboard = () => {
+  router.push("/admin-dashboard");
 };
 </script>
