@@ -91,47 +91,27 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "./firebase";
 
 
-router.post("/google", async (req, res) => {
-
-  console.log("BODY:", req.body);
-  console.log("USUARIO MODEL:", Usuario);
-
+const loginGoogle = async () => {
   try {
+    const result = await signInWithPopup(auth, provider);
 
-    const { nombre, correo } = req.body;
+    const user = {
+      nombre: result.user.displayName,
+      email: result.user.email,
+      foto: result.user.photoURL,
+      tipo: "usuario"
+    };
 
-    let usuario = await Usuario.findOne({
-      where: { correo }
-    });
+    localStorage.setItem("usuario", JSON.stringify(user));
 
-    console.log("FIND RESULT:", usuario);
+    window.dispatchEvent(new Event("usuarioActualizado"));
 
-    if (!usuario) {
-
-      console.log("CREANDO USUARIO...");
-
-      usuario = await Usuario.create({
-        nombre,
-        correo
-      });
-    }
-
-    res.json({
-      ok: true,
-      usuario
-    });
+    router.push("/homeview");
 
   } catch (error) {
-
-    console.log("🔥 ERROR REAL:", error);
-    console.log("STACK:", error.stack);
-
-    res.status(500).json({
-      ok: false,
-      error: error.message
-    });
+    console.error(error);
   }
-});
+};
 
 
 const router = useRouter();
