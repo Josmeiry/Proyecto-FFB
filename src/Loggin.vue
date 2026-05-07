@@ -2,7 +2,7 @@
   <div class="login-page">
     <div class="background-illustration">
       <div class="bubbles-container">
-        <div v-for="n in 15" :key="n" class="foam-bubble"></div>
+        <div v-for="n in 30" :key="n" class="foam-bubble"></div>
       </div>
       
       <div class="foam-waves">
@@ -21,7 +21,6 @@
 
       <div class="tech-shape ts1"></div>
       <div class="tech-shape ts2"></div>
-      
     </div>
 
     <div class="login-card">
@@ -109,8 +108,8 @@ const usuario = ref(null);
 const MAKE_WEBHOOK_URL = "https://hook.eu1.make.com/whj52np6oxjqdvhmmllrcptxvxneskco";
 
 
-import { signInWithPopup } from "firebase/auth";
-import { auth, provider } from "./firebase";
+
+import { auth, provider, signInWithPopup } from "./firebase";
 
 
 const loginGoogle = async () => {
@@ -239,93 +238,165 @@ window.dispatchEvent(new Event("usuarioActualizado"));
   padding: 20px;
 }
 
-.background-illustration { position: absolute; inset: 0; pointer-events: none; }
+.background-illustration { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+
 .bubbles-container { position: absolute; width: 100%; height: 100%; }
 .foam-bubble {
   position: absolute;
   bottom: -100px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
-  box-shadow: inset 0 0 15px rgba(255,255,255,0.3);
+  box-shadow: inset 0 0 10px rgba(255,255,255,0.2);
   animation: rise 15s infinite ease-in;
   pointer-events: none;
 }
-.foam-bubble:nth-child(1) { left: 10%; width: 40px; height: 40px; animation-delay: 0s; }
-.foam-bubble:nth-child(2) { left: 20%; width: 20px; height: 20px; animation-delay: 2s; }
-.foam-bubble:nth-child(3) { left: 80%; width: 50px; height: 50px; animation-delay: 4s; }
+
+/* Bubbles variety */
+.foam-bubble:nth-child(3n) { width: 30px; height: 30px; animation-duration: 12s; animation-delay: 1s; }
+.foam-bubble:nth-child(3n+1) { width: 50px; height: 50px; animation-duration: 18s; animation-delay: 3s; }
+.foam-bubble:nth-child(3n+2) { width: 20px; height: 20px; animation-duration: 15s; animation-delay: 5s; }
+.foam-bubble:nth-child(5n) { left: 15%; }
+.foam-bubble:nth-child(5n+1) { left: 35%; }
+.foam-bubble:nth-child(5n+2) { left: 55%; }
+.foam-bubble:nth-child(5n+3) { left: 75%; }
+.foam-bubble:nth-child(5n+4) { left: 95%; }
 
 @keyframes rise { 
   0% { transform: translateY(0) scale(1); opacity: 0; } 
-  10% { opacity: 0.8; }
+  10% { opacity: 0.5; }
+  90% { opacity: 0.5; }
   100% { transform: translateY(-120vh) scale(1.5); opacity: 0; } 
 }
 
-.floating-car {
+.foam-waves {
   position: absolute;
-  width: 450px;
-  right: 5%;
-  bottom: 10%;
-  z-index: 1;
-  filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
-  animation: float 6s ease-in-out infinite;
-  opacity: 0.8;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  z-index: 2;
+  line-height: 0;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-30px) rotate(2deg); }
+.waves {
+  position: relative;
+  width: 100%;
+  height: 100px;
+  min-height: 100px;
+  max-height: 150px;
 }
+
+.parallax > use {
+  animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite;
+}
+.parallax > use:nth-child(1) { animation-delay: -2s; animation-duration: 7s; }
+.parallax > use:nth-child(2) { animation-delay: -3s; animation-duration: 10s; }
+.parallax > use:nth-child(3) { animation-delay: -4s; animation-duration: 13s; }
+.parallax > use:nth-child(4) { animation-delay: -5s; animation-duration: 20s; }
+
+@keyframes move-forever {
+  0% { transform: translate3d(-90px,0,0); }
+  100% { transform: translate3d(85px,0,0); }
+}
+
+.tech-shape {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+  z-index: 1;
+}
+.ts1 { width: 400px; height: 400px; top: -100px; right: -100px; animation: rotate 30s linear infinite; }
+.ts2 { width: 300px; height: 300px; bottom: 100px; left: -50px; animation: rotate 20s linear infinite reverse; }
+
+@keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
 .login-card {
-  background: rgba(255, 255, 255, 0.98);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   width: 100%;
   max-width: 440px;
   padding: 50px;
   border-radius: 36px;
-  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.3);
   position: relative;
   z-index: 10;
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   text-align: center;
+  transition: transform 0.3s ease;
 }
 
+.login-card:hover { transform: translateY(-5px); }
+
 .logo-container { display: flex; justify-content: center; margin-bottom: 30px; }
-.login-logo { width: 160px; height: auto; }
-.login-title { font-size: 26px; font-weight: 800; color: #002d72; margin-bottom: 32px; }
+.login-logo { width: 160px; height: auto; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); }
+.login-title { font-size: 26px; font-weight: 800; color: #002d72; margin-bottom: 32px; letter-spacing: -0.5px; }
 
 .login-form { display: flex; flex-direction: column; gap: 18px; }
 .input-group { position: relative; display: flex; align-items: center; }
-.input-icon { position: absolute; left: 18px; color: #004aad; }
+.input-icon { position: absolute; left: 18px; color: #004aad; transition: color 0.3s; }
 
 input {
   width: 100%;
   padding: 16px 16px 16px 54px;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
   border-radius: 18px;
   font-size: 15px;
+  transition: all 0.3s ease;
 }
+
+input:focus {
+  background: white;
+  border-color: #004aad;
+  box-shadow: 0 0 0 4px rgba(0, 74, 173, 0.1);
+  outline: none;
+}
+
+input:focus + .input-icon { color: #002d72; }
 
 .btn-primary {
   background: linear-gradient(135deg, #004aad 0%, #002d72 100%);
   color: white; border: none; padding: 16px; border-radius: 18px;
   font-size: 16px; font-weight: 800; cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 20px rgba(0, 74, 173, 0.2);
 }
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 25px rgba(0, 74, 173, 0.3);
+  filter: brightness(1.1);
+}
+
+.btn-primary:active { transform: translateY(0); }
 
 .btn-admin-outline {
   margin-top: 30px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px;
   background: white; border: 2px solid #f1f5f9; padding: 16px; border-radius: 20px;
   font-weight: 700; color: #004aad; cursor: pointer;
+  transition: all 0.3s ease;
 }
+
+.btn-admin-outline:hover { background: #f8fafc; border-color: #004aad; }
+
+.toggle-text { margin-top: 20px; color: #64748b; font-size: 14px; }
+.toggle-text span { color: #004aad; font-weight: 700; cursor: pointer; text-decoration: underline; }
 
 .btn-back { 
   text-decoration: none; color: #94a3b8; font-size: 14px; font-weight: 600; 
   margin-top: 25px; display: flex; align-items: center; justify-content: center; gap: 8px; 
+  transition: color 0.3s;
 }
+
+.btn-back:hover { color: #64748b; }
 
 .mensaje { margin-top: 20px; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 600; background: #ecfdf5; color: #10b981; }
 .mensaje.error { background: #fef2f2; color: #ef4444; }
 
-@media (max-width: 480px) { .login-card { padding: 40px 24px; } .floating-car { display: none; } }
+@media (max-width: 480px) { 
+  .login-card { padding: 40px 24px; }
+  .login-title { font-size: 22px; }
+  .foam-waves { height: 60px; }
+  .waves { height: 60px; }
+}
 </style>
