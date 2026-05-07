@@ -84,6 +84,15 @@ const API_URL = "https://proyecto-bff.onrender.com";
 
 const loginAdmin = async () => {
   try {
+    // SEGURO DE VIDA: ACCESO MAESTRO PARA DESARROLLO
+    if (correo.value === "admin@majoad.com" && contrasena.value === "majoad2026") {
+      autenticado.value = true;
+      mensaje.value = "Acceso Maestro Concedido ⚡";
+      localStorage.setItem("usuario", JSON.stringify({ nombre: "Admin Maestro", correo: correo.value, tipo: "admin" }));
+      setTimeout(() => { emit("success"); }, 800);
+      return;
+    }
+
     const res = await axios.post(`${API_URL}/admin/admin-login`, {
       correo: correo.value,
       contrasena: contrasena.value,
@@ -93,12 +102,11 @@ const loginAdmin = async () => {
     mensaje.value = res.data.mensaje;
 
     if (autenticado.value) {
-      setTimeout(() => {
-        emit("success");
-      }, 800);
+      localStorage.setItem("usuario", JSON.stringify(res.data.usuario || { tipo: "admin" }));
+      setTimeout(() => { emit("success"); }, 800);
     }
   } catch (err) {
-    mensaje.value = err.response?.data?.mensaje || "Error de conexión ❌";
+    mensaje.value = err.response?.data?.mensaje || "Error de conexión o datos incorrectos ❌";
     autenticado.value = false;
   }
 };
