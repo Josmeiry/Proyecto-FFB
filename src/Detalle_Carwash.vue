@@ -41,10 +41,10 @@ const direccion = ref({
 });
 
 const images = [
-  "https://images.unsplash.com/photo-1605559424843-9b8bcb64d409",
-  "https://images.unsplash.com/photo-1605100804763-247f67b3557e",
-  "https://images.unsplash.com/photo-1511910849309-0dffb8785146",
-  "https://images.unsplash.com/photo-1503376780353-7e6692767b70"
+  "https://images.unsplash.com/photo-1601362840469-51e4d8d59085?auto=format&fit=crop&q=80&w=1200",
+  "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&q=80&w=1200",
+  "https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=1200",
+  "https://images.unsplash.com/photo-1507136566466-430dd7fe959b?auto=format&fit=crop&q=80&w=1200"
 ];
 
 const activeImage = ref(images[0]);
@@ -473,8 +473,88 @@ onMounted(async () => {
 @keyframes revealUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
 @media (max-width: 1024px) {
-  .main-layout { grid-template-columns: 1fr; }
-  .luxury-hero { height: auto; padding: 120px 24px; text-align: center; }
-  .badge-row, .hero-stats, .hero-quick-actions { justify-content: center; flex-wrap: wrap; }
+  .main-layout { 
+    grid-template-columns: 1fr; 
+    padding: 0 24px 60px;
+  }
+  .luxury-hero { 
+    min-height: 500px; 
+    padding: 100px 24px 60px; 
+    text-align: center; 
+  }
+  .hero-content {
+    padding-top: 40px;
+  }
+  .badge-row, .hero-stats, .hero-quick-actions { 
+    justify-content: center; 
+    flex-wrap: wrap; 
+  }
+  .main-viewport {
+    height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .luxury-hero {
+    min-height: 450px;
+    padding: 80px 20px 40px;
+  }
+  .main-title {
+    font-size: clamp(32px, 10vw, 48px);
+  }
+  .main-desc {
+    font-size: 16px;
+    margin-bottom: 30px;
+  }
+  .hero-stats {
+    gap: 12px;
+  }
+  .stat-card-lux {
+    padding: 15px 20px;
+    flex: 1 1 140px;
+    justify-content: center;
+  }
+  .main-viewport {
+    height: 300px;
+  }
+  .info-card-premium {
+    padding: 24px;
+  }
+  .service-item-lux {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .luxury-hero {
+    padding-top: 60px;
+  }
+  .hero-quick-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .btn-hero-action {
+    width: 100%;
+    justify-content: center;
+  }
+  .stat-card-lux {
+    flex: 1 1 100%;
+  }
+  .main-viewport {
+    height: 250px;
+  }
+  .thumb-item {
+    width: 80px;
+    height: 55px;
+  }
+  .services-grid-luxury {
+    grid-template-columns: 1fr;
+  }
+  .booking-glass-card {
+    padding: 24px;
+  }
+  .contact-pill {
+    width: 100%;
+  }
 }
 </style>
