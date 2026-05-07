@@ -4,7 +4,7 @@ describe("Login usuario", () => {
 
   it("Inicia sesión correctamente", () => {
 
-    cy.visit("https://majoad.space/login-usuario");
+    cy.visit("https://majoad.space/login");
 
     cy.get('[data-cy="email-login"]')
       .type("jostest@gmail.com");
