@@ -75,6 +75,10 @@
       <button class="btn-admin-outline" @click="irCarWash">  
         <Car :size="20" /> Acceso para Car Wash
       </button>
+       <button class="google-btn" @click="loginGoogle">
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google" class="google-icon"/>
+              
+          </button>
 
       <router-link to="/" class="btn-back">
         <ArrowLeft :size="16" /> Volver al Inicio
@@ -86,7 +90,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 import { Mail, Lock, User, ShieldCheck, ArrowLeft, Car } from 'lucide-vue-next';
@@ -174,6 +178,67 @@ const registerUser = async () => {
 
 const irAdmin = () => router.push("/login-admin");
 const irCarWash = () => router.push("/login-carwash");
+
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "./firebase";
+
+
+router.post("/google", async (req, res) => {
+
+  console.log("BODY:", req.body);
+  console.log("USUARIO MODEL:", Usuario);
+
+  try {
+
+    const { nombre, correo } = req.body;
+
+    let usuario = await Usuario.findOne({
+      where: { correo }
+    });
+
+    console.log("FIND RESULT:", usuario);
+
+    if (!usuario) {
+
+      console.log("CREANDO USUARIO...");
+
+      usuario = await Usuario.create({
+        nombre,
+        correo
+      });
+    }
+
+    res.json({
+      ok: true,
+      usuario
+    });
+
+  } catch (error) {
+
+    console.log("🔥 ERROR REAL:", error);
+    console.log("STACK:", error.stack);
+
+    res.status(500).json({
+      ok: false,
+      error: error.message
+    });
+  }
+});
+
+const usuario = ref(null);
+const loadUser = () => {
+  const user = localStorage.getItem("usuario");
+  usuario.value = user ? JSON.parse(user) : null;
+};
+// 🔥 Escuchar cambios en otras páginas (login/logout)
+window.addEventListener("usuarioActualizado", () => {
+  loadUser();
+});
+
+window.dispatchEvent(new Event("usuarioActualizado"));
+onMounted(() => {
+  loadUser();
+});
 </script>
 
 <style scoped>
@@ -280,4 +345,29 @@ input {
 .mensaje.error { background: #fef2f2; color: #ef4444; }
 
 @media (max-width: 480px) { .login-card { padding: 40px 24px; } .floating-car { display: none; } }
+
+
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+ 
+
+  border: none;
+  border-radius: 10px;
+
+
+  color: #333;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+
+
+.google-icon {
+  width: 22px;
+  height: 22px;
+}
 </style>

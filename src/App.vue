@@ -61,6 +61,10 @@
           </div>
         </div>
       </nav>
+      <button class="google-btn" @click="loginGoogle">
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google" class="google-icon"/>
+              
+          </button>
     </header>
 
     <main class="main-content">
@@ -81,6 +85,54 @@ import {
   X,
   User 
 } from 'lucide-vue-next';
+
+
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "./firebase";
+
+
+router.post("/google", async (req, res) => {
+
+  console.log("BODY:", req.body);
+  console.log("USUARIO MODEL:", Usuario);
+
+  try {
+
+    const { nombre, correo } = req.body;
+
+    let usuario = await Usuario.findOne({
+      where: { correo }
+    });
+
+    console.log("FIND RESULT:", usuario);
+
+    if (!usuario) {
+
+      console.log("CREANDO USUARIO...");
+
+      usuario = await Usuario.create({
+        nombre,
+        correo
+      });
+    }
+
+    res.json({
+      ok: true,
+      usuario
+    });
+
+  } catch (error) {
+
+    console.log("🔥 ERROR REAL:", error);
+    console.log("STACK:", error.stack);
+
+    res.status(500).json({
+      ok: false,
+      error: error.message
+    });
+  }
+});
+
 
 const router = useRouter();
 const route = useRoute();
@@ -131,7 +183,8 @@ onMounted(async () => {
     if (res.data.length) {
       logoApp.value = res.data[0].url.replace(
         "http://localhost:2629",
-        "https://proyecto-bff.onrender.com"
+        "https://proyecto-bff.onrender.com",
+        "https://majoad.space"
       );
     }
   } catch (error) {
@@ -144,9 +197,11 @@ onUnmounted(() => {
 });
 
 // 🔥 Escuchar cambios en otras páginas (login/logout)
-window.addEventListener("storage", () => {
+window.addEventListener("usuarioActualizado", () => {
   loadUser();
 });
+
+window.dispatchEvent(new Event("usuarioActualizado"));
 </script>
 
 <style scoped>
@@ -406,5 +461,29 @@ window.addEventListener("storage", () => {
 
 .main-content {
   flex: 1;
+}
+
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+ 
+
+  border: none;
+  border-radius: 10px;
+
+
+  color: #333;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+
+
+.google-icon {
+  width: 22px;
+  height: 22px;
 }
 </style>
