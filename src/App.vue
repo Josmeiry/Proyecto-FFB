@@ -161,7 +161,8 @@ window.addEventListener("storage", () => {
 
 /* HEADER PREMIUM (Igual a InicioPage) */
 .header {
-  background: #002d72;
+  background: rgba(0, 45, 114, 0.95);
+  backdrop-filter: blur(15px);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -227,7 +228,7 @@ window.addEventListener("storage", () => {
   display: flex;
   gap: 24px;
   list-style: none;
-  margin-left: auto; /* Empuja todo a la derecha */
+  margin-left: 40px; /* Alineado a la izquierda cerca de la marca */
   padding: 0;
   margin-right: 32px; /* Espacio antes de los botones de login */
 }
