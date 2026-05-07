@@ -205,7 +205,7 @@
               <div class="method-icon">
                 <Mail :size="20" color="#0066ff" stroke-width="2" />
               </div>
-              <span>hola@majoad.com</span>
+              <span>majoad@gmail.com</span>
             </div>
             <div class="contact-method">
               <div class="method-icon">
@@ -285,6 +285,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
+import { reactive } from "vue";
 import { 
   Droplets, 
   Clock, 
@@ -323,7 +324,12 @@ const updateClock = () => {
   currentDate.value = now.toLocaleDateString("es-DO", { day: "numeric", month: "long", year: "numeric" });
 };
 
-const form = ref({ name: "", email: "", message: "" });
+// const form = ref({ name: "", email: "", message: "" });
+const form = reactive({
+  name: "",
+  email: "",
+  message: "",
+});
 
 const faqs = ref([
   { question: "¿La plataforma cobra al usuario?", answer: "No, el uso es completamente gratuito.", open: false },
@@ -338,12 +344,12 @@ const handleSubmit = () => {
 
 const toggleFaq = (i) => { faqs.value[i].open = !faqs.value[i].open; };
 
-const sendEmail = () => {
-  const phone = "8093518191";
-  const message = `📩 Nuevo contacto\nNombre: ${form.value.name}\nCorreo: ${form.value.email}\nMensaje: ${form.value.message}`;
-  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
-  form.value = { name: "", email: "", message: "" };
-};
+// const sendEmail = () => {
+//   const phone = "8093518191";
+//   const message = `📩 Nuevo contacto\nNombre: ${form.value.name}\nCorreo: ${form.value.email}\nMensaje: ${form.value.message}`;
+//   window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
+//   form.value = { name: "", email: "", message: "" };
+// };
 
 const buscarCarwash = () => {
   const usuario = localStorage.getItem("usuario");
@@ -359,6 +365,26 @@ const goProfile = () => {
   const usuario = localStorage.getItem("usuario");
   if (usuario) router.push("/configuracion");
   else showLoginModal.value = true;
+};
+
+
+
+const sendEmail = () => {
+  const destinatario = "josmeriymy26@gmail.com";
+
+  const subject = encodeURIComponent(
+    `Mensaje de ${form.name}`
+  );
+
+  const body = encodeURIComponent(
+    `Nombre: ${form.name}
+Correo: ${form.email}
+
+Mensaje:
+${form.message}`
+  );
+
+  window.location.href = `mailto:${destinatario}?subject=${subject}&body=${body}`;
 };
 
 onMounted(() => {

@@ -446,7 +446,8 @@ abrirModal(url) {
 
   // 3️⃣ Redirigir correctamente
   this.$router.push("/inicioP");
-}
+},
+
   }
 };
 </script>

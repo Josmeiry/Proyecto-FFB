@@ -22,6 +22,7 @@
         <a href="#" :class="{ active: currentTab === 'logs' }" @click.prevent="currentTab = 'logs'">
           <History :size="20" /> Actividad
         </a>
+        <router-link to="/registrar-carwash" class="btn-nav-register">Registrar Car Wash</router-link>
       </nav>
 
       <div class="sidebar-footer">
@@ -64,14 +65,14 @@
             <span class="stat-trend">Ver lista completa</span>
           </div>
         </div>
-        <div class="stat-card">
+        <!-- <div class="stat-card">
           <div class="stat-icon pending-bg"><AlertCircle :size="24" /></div>
           <div class="stat-info">
             <h3>Pendientes</h3>
             <span class="stat-value">{{ stats.pendingApprovals }}</span>
             <span class="stat-trend warning">Acción requerida</span>
           </div>
-        </div>
+        </div> -->
       </section>
 
       <!-- BUSINESSES TABLE -->
@@ -88,9 +89,9 @@
             <thead>
               <tr>
                 <th>Negocio</th>
-                <th>Propietario</th>
+                <!-- <th>Propietario</th> -->
                 <th>Estado</th>
-                <th>Fecha</th>
+                <!-- <th>Fecha</th> -->
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -98,23 +99,23 @@
               <tr v-for="cw in filteredBusinesses" :key="cw.id">
                 <td>
                   <div class="user-info">
-                    <div class="user-avatar-small">{{ cw.nombre[0] }}</div>
-                    <span>{{ cw.nombre }}</span>
+                    <div class="user-avatar-small">{{ cw.nombre_carwash?.[0] || "C" }}</div>
+                    <span>{{ cw.nombre_carwash }}</span>
                   </div>
                 </td>
-                <td>{{ cw.owner }}</td>
+                <!-- <td>{{ cw.owner }}</td> -->
                 <td>
-                  <span :class="['badge', cw.estado]">
-                    {{ cw.estado === 'aprobado' ? 'Activo' : 'Pendiente' }}
+                  <span :class="['badge', 'aprobado']">
+                     Activo 
                   </span>
                 </td>
-                <td>{{ cw.fecha }}</td>
+                <!-- <td>{{ cw.fecha }}</td> -->
                 <td>
                   <div class="action-buttons">
                     <button v-if="cw.estado === 'pendiente'" class="btn-action approve" @click="approveBusiness(cw.id)">
                       <Check :size="16" /> Aprobar
                     </button>
-                    <button class="btn-action delete" @click="deleteBusiness(cw.id)">
+                    <button class="btn-action delete" @click="deleteBusiness(cw.id_carwash)">
                       <Trash2 :size="16" />
                     </button>
                   </div>
@@ -149,7 +150,7 @@
               <tr v-for="user in filteredUsers" :key="user.id">
                 <td>
                   <div class="user-info">
-                    <div class="user-avatar-small">{{ user.nombre[0] }}</div>
+                    <div class="user-avatar-small">{{ user.nombre?.[0] || "U" }}</div>
                     <span>{{ user.nombre }}</span>
                   </div>
                 </td>
@@ -201,7 +202,11 @@ const tabTitle = computed(() => {
 
 // FILTROS
 const filteredBusinesses = computed(() => {
-  return businesses.value.filter(b => b.nombre.toLowerCase().includes(searchBusiness.value.toLowerCase()));
+  return businesses.value.filter(b =>
+    b.nombre_carwash?.toLowerCase().includes(
+      searchBusiness.value.toLowerCase()
+    )
+  );
 });
 
 const filteredUsers = computed(() => {
@@ -211,49 +216,110 @@ const filteredUsers = computed(() => {
 // CARGAR DATOS
 const loadData = async () => {
   try {
-    // Aquí irían tus llamadas reales a la API de Render
-    // Simulamos datos por ahora para que el admin vea contenido
-    businesses.value = [
-      { id: 1, nombre: 'Luxury Wash', owner: 'Juan Pérez', estado: 'aprobado', fecha: '2024-05-01' },
-      { id: 2, nombre: 'Speedy Clean', owner: 'Ana García', estado: 'pendiente', fecha: '2024-05-05' },
-      { id: 3, nombre: 'Eco Shine', owner: 'Carlos Ruiz', estado: 'aprobado', fecha: '2024-04-20' },
-    ];
 
-    usersList.value = [
-      { id: 1, nombre: 'Pedro Gomez', correo: 'pedro@mail.com', tipo: 'usuario', lastLogin: 'Hace 2 horas' },
-      { id: 2, nombre: 'Maria Luz', correo: 'maria@mail.com', tipo: 'carwash', lastLogin: 'Hoy 10:00 AM' },
-    ];
+    // =========================
+    // CAR WASHES
+    // =========================
+    const carwashRes = await axios.get(
+      "https://proyecto-bff.onrender.com/carwash"
+    );
 
+    businesses.value = carwashRes.data;
+
+    // =========================
+    // USUARIOS
+    // =========================
+    const usersRes = await axios.get(
+      "https://proyecto-bff.onrender.com/usuarios"
+    );
+
+    usersList.value = usersRes.data;
+
+    // =========================
+    // STATS
+    // =========================
     stats.value = {
-      totalUsers: usersList.value.length,
-      totalBusinesses: businesses.value.length,
-      pendingApprovals: businesses.value.filter(b => b.estado === 'pendiente').length
-    };
+  totalUsers: usersList.value.length,
+  totalBusinesses: businesses.value.length,
+  pendingApprovals: 0
+};
+
   } catch (err) {
     console.error("Error cargando panel:", err);
   }
 };
 
 // ACCIONES
-const approveBusiness = (id) => {
-  const biz = businesses.value.find(b => b.id === id);
-  if (biz) {
-    biz.estado = 'aprobado';
-    stats.value.pendingApprovals--;
+const approveBusiness = async (id) => {
+  try {
+
+    await axios.put(
+      `https://proyecto-bff.onrender.com/carwash/${id}`,
+      {
+        estado: "aprobado"
+      }
+    );
+
+    const biz = businesses.value.find(
+      b => b.id_carwash === id
+    );
+
+    if (biz) {
+      biz.estado = "aprobado";
+    }
+
+    stats.value.pendingApprovals =
+      businesses.value.filter(
+        b => b.estado !== "aprobado"
+      ).length;
+
+  } catch (error) {
+    console.error("Error aprobando negocio:", error);
   }
 };
 
-const deleteUser = (id) => {
-  if (confirm("¿Estás seguro de eliminar este usuario permanentemente?")) {
-    usersList.value = usersList.value.filter(u => u.id !== id);
+const deleteUser = async (id) => {
+  if (!confirm("¿Eliminar este usuario?")) return;
+
+  try {
+
+    await axios.delete(
+      `https://proyecto-bff.onrender.com/usuarios/${id}`
+    );
+
+    usersList.value = usersList.value.filter(
+      u => u.id !== id
+    );
+
     stats.value.totalUsers--;
+
+  } catch (error) {
+    console.error("Error eliminando usuario:", error);
   }
 };
 
-const deleteBusiness = (id) => {
-  if (confirm("¿Eliminar este negocio del sistema?")) {
-    businesses.value = businesses.value.filter(b => b.id !== id);
-    stats.value.totalBusinesses--;
+const deleteBusiness = async (id) => {
+
+  if (!confirm("¿Eliminar este negocio del sistema?")) {
+    return;
+  }
+
+  try {
+
+    await axios.delete(
+      `https://proyecto-bff.onrender.com/carwash/${id}`
+    );
+
+    businesses.value =
+      businesses.value.filter(
+        b => b.id_carwash !== id
+      );
+
+    stats.value.totalBusinesses =
+      businesses.value.length;
+
+  } catch (error) {
+    console.error("Error eliminando negocio:", error);
   }
 };
 

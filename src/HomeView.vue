@@ -187,7 +187,7 @@ function goToMaps(cw) {
         <div v-for="cw in filteredCarWash" :key="cw.id" class="cw-card-premium">
           <div class="cw-image-box">
             <img :src="cw.image" alt="Car Wash" />
-            <div class="cw-rating">⭐ 4.8</div>
+            <!-- <div class="cw-rating">⭐ 4.8</div> -->
           </div>
           <div class="cw-details">
             <h3>{{ cw.name }}</h3>

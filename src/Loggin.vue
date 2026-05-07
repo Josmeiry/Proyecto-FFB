@@ -21,7 +21,7 @@
 
       <div class="tech-shape ts1"></div>
       <div class="tech-shape ts2"></div>
-      <img src="/blue_car_no_bg_1778035751590.png" alt="Car" class="floating-car" />
+      <img src="/public/blue-car-nobg-Photoroom.png" alt="Car" class="floating-car" />
     </div>
 
     <div class="login-card">
@@ -72,6 +72,9 @@
       <button class="btn-admin-outline" @click="irAdmin">
         <ShieldCheck :size="20" /> Acceso para administradores
       </button>
+      <button class="btn-admin-outline" @click="irCarWash">  
+        <Car :size="20" /> Acceso para Car Wash
+      </button>
 
       <router-link to="/" class="btn-back">
         <ArrowLeft :size="16" /> Volver al Inicio
@@ -86,7 +89,7 @@
 import { ref } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
-import { Mail, Lock, User, ShieldCheck, ArrowLeft } from 'lucide-vue-next';
+import { Mail, Lock, User, ShieldCheck, ArrowLeft, Car } from 'lucide-vue-next';
 
 const router = useRouter();
 const cargando = ref(false);
@@ -170,6 +173,7 @@ const registerUser = async () => {
 };
 
 const irAdmin = () => router.push("/login-admin");
+const irCarWash = () => router.push("/login-carwash");
 </script>
 
 <style scoped>

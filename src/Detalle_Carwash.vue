@@ -80,6 +80,36 @@ const toggleFavorito = () => {
   localStorage.setItem("favoritos", JSON.stringify(favoritos));
 };
 
+const openWhatsApp = () => {
+  if (!carwash.value?.telefono) {
+    alert("Este car wash no tiene teléfono");
+    return;
+  }
+
+  // limpia espacios, guiones, paréntesis, etc
+  const telefono = carwash.value.telefono.replace(/\D/g, "");
+
+  const mensaje = encodeURIComponent(
+    `Hola, quiero reservar un turno en ${carwash.value.nombre_carwash}`
+  );
+
+  window.open(
+    `https://wa.me/${telefono}?text=${mensaje}`,
+    "_blank"
+  );
+};
+
+const callPhone = () => {
+  if (!carwash.value?.telefono) {
+    alert("Este car wash no tiene teléfono");
+    return;
+  }
+
+  const telefono = carwash.value.telefono.replace(/\D/g, "");
+
+  window.location.href = `tel:${telefono}`;
+};
+
 onMounted(async () => {
   try {
     const id = route.params.id;
@@ -132,9 +162,9 @@ onMounted(async () => {
             <button @click="toggleFavorito" class="btn-hero-action" :class="{ active: esFavorito }">
               <Heart :size="18" :fill="esFavorito ? '#ffc107' : 'none'" /> Favorito
             </button>
-            <button class="btn-hero-action primary">
+            <!-- <button class="btn-hero-action primary">
               <Calendar :size="18" /> Agendar Cita
-            </button>
+            </button> -->
           </div>
         </div>
 
@@ -146,13 +176,13 @@ onMounted(async () => {
               <span>{{ direccion.ciudad || 'Santiago, DR' }}</span>
             </div>
           </div>
-          <div class="stat-card-lux">
+          <!-- <div class="stat-card-lux">
             <div class="stat-icon-lux"><Star :size="24" /></div>
             <div class="stat-info-lux">
               <small>Valoración</small>
               <span>4.9 / 5.0</span>
             </div>
-          </div>
+          </div> -->
           <div class="stat-card-lux">
             <div class="stat-icon-lux"><ShieldCheck :size="24" /></div>
             <div class="stat-info-lux">
@@ -236,10 +266,10 @@ onMounted(async () => {
           </div>
           
           <div class="booking-buttons">
-            <button class="btn-lux btn-whatsapp">
+            <button class="btn-lux btn-whatsapp" @click="openWhatsApp">
               <Smartphone :size="20" /> WhatsApp
             </button>
-            <button class="btn-lux btn-call">
+            <button class="btn-lux btn-call" @click="callPhone">
               <Phone :size="20" /> Llamar ahora
             </button>
           </div>
@@ -371,7 +401,7 @@ onMounted(async () => {
 /* LAYOUT */
 .main-layout {
   max-width: 1200px;
-  margin: -60px auto 0;
+  margin: 20px auto 0;
   padding: 0 40px 100px;
   display: grid;
   grid-template-columns: 1fr 380px;
