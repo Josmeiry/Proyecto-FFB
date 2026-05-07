@@ -108,8 +108,8 @@ const usuario = ref(null);
 const MAKE_WEBHOOK_URL = "https://hook.eu1.make.com/whj52np6oxjqdvhmmllrcptxvxneskco";
 
 
-
-import { auth, provider, signInWithPopup } from "./firebase";
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "./firebase";
 
 
 const loginGoogle = async () => {
