@@ -46,6 +46,10 @@
           <Image :size="20" />
           <span>Galería de Fotos</span>
         </button>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdtr186nqiYg4KEk4Y2gVBb6kNRcirFiokzyYquUZZoWgR2ng/viewform?usp=publish-editor" target="_blank" class="menu-link-support">
+          <LifeBuoy :size="20" />
+          <span>Soporte Técnico</span>
+        </a>
       </nav>
 
       <div class="sidebar-footer">
@@ -268,7 +272,7 @@
         <p>&copy; 2026 MAJOAD CAR WASH. Todos los derechos reservados.</p>
         <div class="footer-links">
           <a href="#">Privacidad</a>
-          <a href="#">Soporte</a>
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSdtr186nqiYg4KEk4Y2gVBb6kNRcirFiokzyYquUZZoWgR2ng/viewform?usp=publish-editor" target="_blank">Soporte</a>
         </div>
       </footer>
     </main>
@@ -305,7 +309,7 @@ import {
   Briefcase, CalendarClock, DollarSign, Save, Camera,
   Store, Mail, Phone, Clock, AlignLeft, MapPin, Plus,
   ChevronLeft, ChevronRight, Maximize2, Trash2, X,
-  CheckCircle, AlertCircle
+  CheckCircle, AlertCircle, LifeBuoy
 } from 'lucide-vue-next';
 
 const router = useRouter();
@@ -600,7 +604,7 @@ const logout = () => {
 .user-info p { font-size: 11px; color: #64748b; }
 
 .menu { display: flex; flex-direction: column; gap: 8px; }
-.menu button {
+.menu button, .menu-link-support {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -614,8 +618,9 @@ const logout = () => {
   transition: all 0.3s;
   font-size: 14px;
   font-weight: 600;
+  text-decoration: none;
 }
-.menu button:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
+.menu button:hover, .menu-link-support:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
 .menu button.active { background: #3b82f6; color: #fff; box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2); }
 
 .sidebar-footer { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
