@@ -41,10 +41,9 @@ const direccion = ref({
 });
 
 const images = [
-  "https://images.unsplash.com/photo-1601362840469-51e4d8d59085?auto=format&fit=crop&q=80&w=1200",
+  
   "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&q=80&w=1200",
-  "https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=1200",
-  "https://images.unsplash.com/photo-1507136566466-430dd7fe959b?auto=format&fit=crop&q=80&w=1200"
+  "https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=1200"
 ];
 
 const activeImage = ref(images[0]);

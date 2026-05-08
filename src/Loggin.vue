@@ -37,9 +37,13 @@
         </div>
         <div class="input-group">
           <Lock class="input-icon" :size="20" />
-          <input type="password" v-model="loginContrasena" placeholder="Contraseña" required data-cy="pass-login"/>
+          <input :type="showPassword ? 'text' : 'password'" v-model="loginContrasena" placeholder="Contraseña" required data-cy="pass-login"/>
+          <button type="button" class="toggle-password" @click="showPassword = !showPassword">
+            <Eye v-if="!showPassword" :size="20" />
+            <EyeOff v-else :size="20" />
+          </button>
         </div>
-        <button type="submit" class="btn-primary" :disabled="cargando" data-cy="btn-login"> >
+        <button type="submit" class="btn-primary" :disabled="cargando" data-cy="btn-login"> 
           {{ cargando ? 'Accediendo...' : 'Entrar' }}
         </button>
         <p class="toggle-text">
@@ -58,7 +62,11 @@
         </div>
         <div class="input-group">
           <Lock class="input-icon" :size="20" />
-          <input type="password" v-model="registerContrasena" placeholder="Contraseña" required />
+          <input :type="showRegisterPassword ? 'text' : 'password'" v-model="registerContrasena" placeholder="Contraseña" required data-cy="pass-register"/>
+          <button type="button" class="toggle-password" @click="showRegisterPassword = !showRegisterPassword">
+            <Eye v-if="!showRegisterPassword" :size="20" />
+            <EyeOff v-else :size="20" />
+          </button>
         </div>
         <button type="submit" class="btn-primary" :disabled="cargando">
           {{ cargando ? 'Registrando...' : 'Crear Cuenta' }}
@@ -91,7 +99,7 @@
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
-import { Mail, Lock, User, ShieldCheck, ArrowLeft, Car } from 'lucide-vue-next';
+import { Mail, Lock, User, ShieldCheck, ArrowLeft, Car, Eye, EyeOff } from 'lucide-vue-next';
 
 const router = useRouter();
 const cargando = ref(false);
@@ -104,6 +112,8 @@ const mostrarRegistro = ref(false);
 const mensaje = ref("");
 const isError = ref(false);
 const usuario = ref(null);
+const showPassword = ref(false);
+const showRegisterPassword = ref(false);
 
 const MAKE_WEBHOOK_URL = "https://hook.eu1.make.com/whj52np6oxjqdvhmmllrcptxvxneskco";
 
@@ -398,5 +408,22 @@ input:focus + .input-icon { color: #002d72; }
   .login-title { font-size: 22px; }
   .foam-waves { height: 60px; }
   .waves { height: 60px; }
+}
+
+.toggle-password {
+  position: absolute;
+  right: 18px;
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+}
+
+.toggle-password:hover {
+  color: #004aad;
 }
 </style>
