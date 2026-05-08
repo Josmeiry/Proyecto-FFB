@@ -22,6 +22,9 @@
         <a href="#" :class="{ active: currentTab === 'logs' }" @click.prevent="currentTab = 'logs'">
           <History :size="20" /> Actividad
         </a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdtr186nqiYg4KEk4Y2gVBb6kNRcirFiokzyYquUZZoWgR2ng/viewform?usp=publish-editor" target="_blank" class="support-link">
+          <LifeBuoy :size="20" /> Soporte Técnico
+        </a>
         <router-link to="/registrar-carwash" class="btn-nav-register">Registrar Car Wash</router-link>
       </nav>
 
@@ -177,7 +180,7 @@ import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { 
   ShieldCheck, LayoutDashboard, Building2, Users, History, LogOut, 
-  Search, Check, Trash2, UserMinus, AlertCircle, TrendingUp 
+  Search, Check, Trash2, UserMinus, AlertCircle, TrendingUp, LifeBuoy 
 } from 'lucide-vue-next';
 
 const router = useRouter();

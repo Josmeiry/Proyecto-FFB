@@ -211,7 +211,7 @@
               <div class="method-icon">
                 <Phone :size="20" color="#0066ff" stroke-width="2" />
               </div>
-              <span>+1 809 351 8191</span>
+              <span>+1 809 353 2460</span>
             </div>
           </div>
         </div>
@@ -345,7 +345,7 @@ const handleSubmit = () => {
 const toggleFaq = (i) => { faqs.value[i].open = !faqs.value[i].open; };
 
 // const sendEmail = () => {
-//   const phone = "8093518191";
+//   const phone = "8093532460";
 //   const message = `📩 Nuevo contacto\nNombre: ${form.value.name}\nCorreo: ${form.value.email}\nMensaje: ${form.value.message}`;
 //   window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
 //   form.value = { name: "", email: "", message: "" };
